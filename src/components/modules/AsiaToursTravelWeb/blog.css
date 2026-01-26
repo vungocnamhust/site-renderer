@@ -1,0 +1,361 @@
+/* Blog Page Styles */
+
+/* Container & Layout */
+.travel-guide-container {
+    padding: 40px 0;
+    background-color: #fff;
+}
+
+.detail-travel-guide-container .container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* Tab Navigation */
+.wrap-blog-item-1 {
+    width: 100%;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.blogs-tab ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 30px;
+}
+
+.blogs-tab ul li a {
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 600;
+    padding-bottom: 15px;
+    display: block;
+    border-bottom: 2px solid transparent;
+    color: #555;
+    transition: all 0.3s ease;
+}
+
+.blogs-tab ul li a.active,
+.blogs-tab ul li a:hover {
+    color: #d0b316;
+    border-bottom-color: #d0b316;
+}
+
+/* Listing Page Grid */
+.travel-guide-container .wrap-blog-item-2 {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.main-posts {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-posts img {
+    border-radius: 4px;
+    margin-bottom: 15px;
+    height: 240px;
+    width: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.main-posts:hover img {
+    transform: scale(1.02);
+}
+
+.main-posts h3 {
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.main-posts h3 a:hover {
+    color: #d0b316;
+}
+
+.main-posts .box-share {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: #888;
+}
+
+.main-posts .desti {
+    background: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    color: #555;
+}
+
+.main-posts .paragraph {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #666;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-align: left; /* Override home.css center */
+}
+
+/* Detail Page Layout */
+.detail-travel-guide-container .wrap-blog-item-2 {
+    width: calc(100% - 330px); /* Left column */
+    display: block; /* Override grid */
+}
+
+.right-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.wrap-blog-item-3, 
+.wrap-blog-item-4 {
+    margin-bottom: 40px;
+}
+
+/* Blog Content */
+.detail-travel-guide-container h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-transform: none; /* Override usually upercase */
+}
+
+/* Detail Social Share */
+.detail-travel-guide-container .box-share {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.detail-travel-guide-container .box-share .desti {
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: auto;
+}
+
+.detail-travel-guide-container .box-share a i {
+    font-size: 18px;
+    color: #aaa;
+}
+
+.detail-travel-guide-container .box-share a:hover i {
+    color: #d0b316;
+}
+
+/* Content Styles */
+.detail-travel-guide-container .paragraph {
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.detail-travel-guide-container .paragraph p {
+    margin-bottom: 20px;
+}
+
+.detail-travel-guide-container .paragraph h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    color: #d0b316;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.detail-travel-guide-container .paragraph h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.detail-travel-guide-container .paragraph img {
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+/* Sidebar Widgets */
+.sticky-box {
+    position: sticky;
+    top: 20px;
+}
+
+.box-blog {
+    margin-bottom: 30px;
+}
+
+.box-blog > a {
+    display: block;
+    background: #f9f9f9;
+    padding: 15px 20px;
+    border-left: 3px solid #d0b316;
+    font-weight: 700;
+    color: #333;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+}
+
+.blog-des-list ul {
+    display: block;
+    padding-left: 0;
+}
+
+.blog-des-list ul li {
+    border-bottom: 1px solid #eee;
+}
+
+.blog-des-list ul li a {
+    display: block;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.blog-des-list ul li a:hover {
+    color: #d0b316;
+    padding-left: 5px;
+}
+
+.blog-userful ul li a {
+     display: block;
+    padding: 12px 0;
+    font-size: 14px;
+    color: #555;
+    border-bottom: 1px solid #eee;
+}
+
+.blog-social-list ul {
+    display: flex;
+    gap: 10px;
+}
+
+.blog-social-list ul li a i {
+    width: 35px;
+    height: 35px;
+    background: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    color: #555;
+    font-size: 14px;
+}
+
+.blog-social-list ul li a:hover i {
+    background: #d0b316;
+    color: #fff;
+}
+
+.recent-posts > a span {
+    display: block;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.box-blog-flex .row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+}
+
+.box-blog-flex .col-xlg-6 {
+    width: 50%;
+}
+
+.box-blog-flex h3 a {
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+.box-blog-flex h3 a:hover {
+    color: #d0b316;
+}
+
+.box-blog-flex .desti {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+}
+
+/* Explore More Grid */
+.wrap-extra-posts {
+    margin-top: 50px;
+    border-top: 1px solid #eee;
+    padding-top: 40px;
+}
+
+.wrap-extra-posts h2 {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.wrap-extra-posts .row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.extra-posts h3 a {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 15px;
+    display: block;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .detail-travel-guide-container .wrap-blog-item-2 {
+        width: 100%;
+    }
+    .right-sidebar {
+        width: 100%;
+    }
+    .detail-travel-guide-container .container {
+        flex-direction: column;
+    }
+    .wrap-extra-posts .row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .travel-guide-container .wrap-blog-item-2 {
+         grid-template-columns: 1fr;
+    }
+    .wrap-extra-posts .row {
+        grid-template-columns: 1fr;
+    }
+}

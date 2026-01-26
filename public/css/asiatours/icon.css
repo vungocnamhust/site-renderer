@@ -1,0 +1,542 @@
+@font-face {
+  font-family: 'insideTravel';
+  src:  url('/fonts/asiatours/insidetravel/insideTravel.eot?s73mmp');
+  src:  url('/fonts/asiatours/insidetravel/insideTravel.eot?s73mmp#iefix') format('embedded-opentype'),
+    url('/fonts/asiatours/insidetravel/insideTravel.ttf?s73mmp') format('truetype'),
+    url('/fonts/asiatours/insidetravel/insideTravel.woff?s73mmp') format('woff'),
+    url('/fonts/asiatours/insidetravel/insideTravel.svg?s73mmp#insideTravel') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.icon-font {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'insideTravel' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.bullet-train:before {
+  content: "\e980";
+}
+.bus:before {
+  content: "\e981";
+}
+.rickshaw:before {
+  content: "\e982";
+}
+.tram:before {
+  content: "\e983";
+}
+.owt-bold:before {
+  content: "\e97e";
+}
+.owt-light:before {
+  content: "\e97f";
+}
+.moon1:before {
+  content: "\e97d";
+}
+.skiing:before {
+  content: "\e97c";
+}
+.icon-balloon:before {
+  content: "\e904";
+}
+.facebook-messenger:before {
+  content: "\e97a";
+}
+.happy-01:before {
+  content: "\e979";
+  color: #37c1d3;
+}
+.icon-map-mekong:before {
+  content: "\e978";
+  color: #962d1f;
+}
+.asiatours-black:before {
+  content: "\e977";
+}
+.date-01:before {
+  content: "\e976";
+}
+.icon-loading:before {
+  content: "\e975";
+}
+.icon-personal-01:before {
+  content: "\e971";
+}
+.icon-trip-01:before {
+  content: "\e974";
+}
+.icon-password:before {
+  content: "\e973";
+}
+.icon-invoice:before {
+  content: "\e96f";
+}
+.icon-logout:before {
+  content: "\e970";
+}
+.icon-departure-01:before {
+  content: "\e96e";
+}
+.icon-menu-1:before {
+  content: "\e96a";
+}
+.icon-menu-2:before {
+  content: "\e96b";
+}
+.icon-menu-3:before {
+  content: "\e96c";
+}
+.icon-menu-4:before {
+  content: "\e96d";
+}
+.icon-next-back:before {
+  content: "\e969";
+  color: #d3d4d4;
+}
+.icon-build:before {
+  content: "\e966";
+}
+.icon-call:before {
+  content: "\e967";
+}
+.icon-mail:before {
+  content: "\e968";
+}
+.icon-time:before {
+  content: "\e965";
+}
+.icon-des-1:before {
+  content: "\e961";
+  color: #d0b316;
+}
+.icon-des-2:before {
+  content: "\e962";
+  color: #d0b316;
+}
+.icon-des-3:before {
+  content: "\e963";
+  color: #d0b316;
+}
+.icon-des-4:before {
+  content: "\e964";
+  color: #d0b316;
+}
+.icon-info:before {
+  content: "\e960";
+}
+.icon-faq:before {
+  content: "\e95f";
+}
+.icon-destination:before {
+  content: "\e95e";
+  color: #d0b42b;
+}
+.ex-boutiquehotels:before {
+  content: "\e958";
+}
+.ex-couple-honeymoon:before {
+  content: "\e959";
+}
+.ex-family-holiday:before {
+  content: "\e95a";
+}
+.ex-luxury-hotels-resorts:before {
+  content: "\e95b";
+}
+.ex-stardard-hotels:before {
+  content: "\e95c";
+}
+.ex-wellness-relaxation:before {
+  content: "\e95d";
+}
+.boutique-hotels:before {
+  content: "\e952";
+}
+.couple-honeymoon:before {
+  content: "\e953";
+}
+.family-holiday:before {
+  content: "\e954";
+}
+.luxury-hotels-resorts:before {
+  content: "\e955";
+}
+.stardard-hotels:before {
+  content: "\e956";
+}
+.wellness-relaxation:before {
+  content: "\e957";
+}
+.speed-boat:before {
+  content: "\e933";
+}
+.icon-user-2:before {
+  content: "\e932";
+  color: #ccc;
+}
+.icon-itine:before {
+  content: "\e930";
+}
+.icon-ethnic:before {
+  content: "\e94f";
+  color: #545454;
+}
+.icon-cruising:before {
+  content: "\e950";
+  color: #545454;
+}
+.icon-adventure:before {
+  content: "\e951";
+  color: #545454;
+}
+.icon-boating:before {
+  content: "\e931";
+}
+.icon-festival:before {
+  content: "\e936";
+}
+.icon-history:before {
+  content: "\e937";
+}
+.icon-couple:before {
+  content: "\e92d";
+}
+.icon-family:before {
+  content: "\e92e";
+}
+.moon:before {
+  content: "\e92f";
+}
+.icon-overview:before {
+  content: "\e92b";
+  color: #d0b42c;
+}
+.icon-highlight:before {
+  content: "\e92c";
+  color: #d0b42c;
+}
+.price-tag:before {
+  content: "\e926";
+}
+.play-video:before {
+  content: "\e916";
+}
+.bamboo-rafting:before {
+  content: "\e934";
+  color: #606161;
+}
+.bikking:before {
+  content: "\e935";
+  color: #606161;
+}
+.cable-car:before {
+  content: "\e938";
+  color: #606161;
+}
+.canoe:before {
+  content: "\e939";
+  color: #606161;
+}
+.cidomo:before {
+  content: "\e93a";
+}
+.cyclo:before {
+  content: "\e93b";
+  color: #606161;
+}
+.electric-car:before {
+  content: "\e93c";
+  color: #606161;
+}
+.elephant:before {
+  content: "\e93d";
+  color: #606161;
+}
+.ferry:before {
+  content: "\e93e";
+  color: #606161;
+}
+.hill-truck:before {
+  content: "\e93f";
+  color: #606161;
+}
+.horse:before {
+  content: "\e940";
+  color: #606161;
+}
+.horse-cart:before {
+  content: "\e941";
+  color: #606161;
+}
+.jeep:before {
+  content: "\e943";
+  color: #606161;
+}
+.motorbike:before {
+  content: "\e944";
+  color: #606161;
+}
+.oxcart:before {
+  content: "\e945";
+  color: #606161;
+}
+.pedicab:before {
+  content: "\e946";
+}
+.rafting:before {
+  content: "\e947";
+  color: #606161;
+}
+.sidecar:before {
+  content: "\e948";
+  color: #606161;
+}
+.swimming:before {
+  content: "\e949";
+  color: #606161;
+}
+.train:before {
+  content: "\e94a";
+  color: #606161;
+}
+.trekking:before {
+  content: "\e94b";
+  color: #606161;
+}
+.trishaw:before {
+  content: "\e94c";
+  color: #606161;
+}
+.tuk-tuk:before {
+  content: "\e94d";
+  color: #606161;
+}
+.walking:before {
+  content: "\e94e";
+  color: #606161;
+}
+.heart-empty:before {
+  content: "\e914";
+}
+.heart-full:before {
+  content: "\e915";
+}
+.zalo:before {
+  content: "\e97b";
+}
+.menu:before {
+  content: "\e91d";
+}
+.contract:before {
+  content: "\e919";
+}
+.db-bed:before {
+  content: "\e91a";
+}
+.discount:before {
+  content: "\e91b";
+}
+.map-itine:before {
+  content: "\e91c";
+}
+.testimonial:before {
+  content: "\e925";
+}
+.checklist:before {
+  content: "\e918";
+}
+.bed:before {
+  content: "\e928";
+}
+.exchange:before {
+  content: "\e929";
+}
+.university:before {
+  content: "\e92a";
+}
+.external-link:before {
+  content: "\e927";
+}
+.hiking:before {
+  content: "\e921";
+}
+.mountain:before {
+  content: "\e922";
+}
+.zoo:before {
+  content: "\e923";
+}
+.umbrella-beach-solid:before {
+  content: "\e924";
+}
+.calendar-regular:before {
+  content: "\e917";
+}
+.facebook-square-brands:before {
+  content: "\e900";
+}
+.instagram-brands:before {
+  content: "\e901";
+}
+.twitter-brands:before {
+  content: "\e902";
+}
+.icon-15:before {
+  content: "\e903";
+  color: #545454;
+}
+.icon-beach:before {
+  content: "\e905";
+  color: #545454;
+}
+.icon-biking:before {
+  content: "\e906";
+  color: #545454;
+}
+.icon-cruises:before {
+  content: "\e907";
+  color: #545454;
+}
+.icon-cuisine:before {
+  content: "\e908";
+  color: #545454;
+}
+.icon-cultural:before {
+  content: "\e909";
+  color: #545454;
+}
+.icon-heritage:before {
+  content: "\e90a";
+  color: #545454;
+}
+.icon-kayaking:before {
+  content: "\e90b";
+  color: #545454;
+}
+.icon-mountain:before {
+  content: "\e90c";
+  color: #545454;
+}
+.icon-nature:before {
+  content: "\e90d";
+  color: #545454;
+}
+.icon-swimming:before {
+  content: "\e90e";
+  color: #545454;
+}
+.icon-trekking:before {
+  content: "\e90f";
+  color: #545454;
+}
+.icon-wellness:before {
+  content: "\e910";
+  color: #545454;
+}
+.icon-wildlife:before {
+  content: "\e911";
+  color: #545454;
+}
+.select-arrow-thin:before {
+  content: "\e912";
+}
+.user-regular:before {
+  content: "\e913";
+}
+.envelope:before {
+  content: "\f003";
+}
+.star:before {
+  content: "\f005";
+}
+.clock-o:before {
+  content: "\f017";
+}
+.bookmark:before {
+  content: "\f02e";
+}
+.map-marker:before {
+  content: "\f041";
+}
+.icon-pencil:before {
+  content: "\f044";
+}
+.check-square-o:before {
+  content: "\f046";
+}
+.gift:before {
+  content: "\f06b";
+}
+.icon-plane:before {
+  content: "\f072";
+}
+.calendar:before {
+  content: "\f073";
+}
+.retweet:before {
+  content: "\f079";
+}
+.key:before {
+  content: "\f084";
+}
+.star-half:before {
+  content: "\f123";
+}
+.thumbs-up:before {
+  content: "\f164";
+}
+.icon-car:before {
+  content: "\f1b9";
+}
+.ship:before {
+  content: "\f21a";
+}
+.image:before {
+  content: "\e91e";
+}
+.images:before {
+  content: "\e91f";
+}
+.camera:before {
+  content: "\e920";
+}
+.phone:before {
+  content: "\e942";
+}
+.icon-users:before {
+  content: "\e972";
+}
+.search:before {
+  content: "\e986";
+}
+.enlarge:before {
+  content: "\e989";
+}
+.spoon-knife:before {
+  content: "\e9a3";
+}
+.eye:before {
+  content: "\e9ce";
+}
+.plus:before {
+  content: "\ea0a";
+}
+.minus:before {
+  content: "\ea0b";
+}
+.checkmark:before {
+  content: "\ea10";
+}

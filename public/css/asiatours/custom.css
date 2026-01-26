@@ -1,0 +1,120 @@
+.btn-st1{background-color:#edce07}
+.btn-st3{color:#111;background-color:#edce07;}
+.fab-box a{background-color:#edce07;color:#111;}
+footer .brand-section .copy-right{color:#edce07}
+.foot-trip .heart-tour .heart-empty:before{content: "\e914";}
+.foot-trip .heart-tour:hover .heart-empty:before{content: "\e915";color: #d0b316}
+.foot-trip .heart-tour .heart-full:before{content: "\e915";color: #d0b316}
+.foot-trip .heart-tour:hover .heart-full:before{color: #AEAEAE}
+/*Detail Tour*/
+.navbar-cruise{background-color:#edce07;}
+.navbar-cruise ul li a{color:#111;}
+.navbar-cruise ul li a .icon-font:before{color:#111;}
+/*Detail Cruise*/
+.section-grid-dt3 .grid-ct5{grid-row: 3 / 6;}
+/*Map Home*/
+.wrap-coo #map-coo-1{top:31.1% !important;left:59% !important}
+.wrap-coo #map-coo-2{top:45.1% !important;left:58.8% !important}
+.wrap-coo #map-coo-3{top:34.5% !important;left:56.9% !important}
+.wrap-coo #map-coo-4{top:32.9% !important;left:52.4% !important}
+.wrap-coo #map-coo-5{top:40.2% !important;left:55.9% !important}
+.wrap-coo #map-coo-6{top:73.7% !important;left:63.4% !important}
+.wrap-coo #map-coo-7{top:59.5% !important;left:64.9% !important}
+.wrap-coo #map-coo-8{top:60.6% !important;left:57.5% !important}
+.wrap-coo #map-coo-9{top:42.3% !important;left:71.4% !important}
+.wrap-coo #map-coo-10{top:16.3% !important;left:63.4% !important}
+.wrap-coo #map-coo-11{top:7.3%;left:82.2%}
+.wrap-coo #map-coo-12{top:21.3%;left:47.9%}
+.wrap-coo #map-coo-13{top:20.3%;left:42.9%}
+.wrap-coo #map-coo-14{top:29.3%;left:40.9%}
+.wrap-coo #map-coo-15{top:52.3%;left:40.9%}
+#map-coo-16{top:30.3%!important;left:65.4%!important}
+.wrap-coo #map-coo-17{top:6%!important;left:75.5%!important}
+/*Map*/
+.gm-style {font-family: 'Montserrat', Arial, sans-serif !important;}
+/*Tran*/
+#goog-gt-tt {display:none !important;}
+.goog-te-banner-frame {display:none !important;}
+.goog-te-menu-value:hover {text-decoration:none !important;}
+.goog-text-highlight {background-color:transparent !important;box-shadow:none !important;}
+#google_translate_element2 {display:none!important;}
+body {top:0 !important;}
+/*Iframe Videos Youtube*/
+.video-box-st2 .hidden-tablet{
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+}
+.video-box-st2 .hidden-tablet iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/*Customers experiences*/
+#tab-experience .gallery{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center; }
+/*Translate*/
+#goog-gt-tt {display:none !important;}
+.goog-te-banner-frame {display:none !important;}
+.goog-te-menu-value:hover {text-decoration:none !important;}
+.goog-text-highlight {background-color:transparent !important;box-shadow:none !important;}
+body {top:0 !important;}
+#google_translate_element2 {display:none!important;}
+.select-st2-new{width:100%;height:auto;border:1px solid #aaa;font-size:12px;vertical-align:middle;line-height:1.5;color:#555;padding:10px 8px;-webkit-transition:all .25s linear;-moz-transition:all .25s linear;-o-transition:all .25s linear;-ms-transition:all .25s linear;transition:all .25s linear;background-color:#fff;position:relative;text-align:left}
+.select-st2-new .text{cursor:pointer}
+.select-st2-new .text>.icon-font:first-child{color:#888}
+.select-st2-new .value-2{top:100%}
+.select-st2-new .value{top:100%;z-index:3}
+.select-st2-new .value>li>.btn-value{padding:10px}
+.select-st2-new .value>li>.btn-value>b{text-overflow:clip;white-space:normal}
+.select-st2-new .value .btn-value .icon-font:first-child{display:inline-block;margin-right:8px;font-size:15px;color:#d0b316;-webkit-transition:all .25s linear;-moz-transition:all .25s linear;-o-transition:all .25s linear;-ms-transition:all .25s linear;transition:all .25s linear}
+.select-st2-new .value .btn-value:hover b{color:#d0b316}
+.recent-travel-image:hover{border: 1px solid #000;box-shadow: 0 0 20px #000;}
+/* Detail tour Exp*/
+.experience-suplier .experience-img{width:35%}
+.experience-suplier .experience-img img{-webkit-filter:none;filter:none}
+.experience-suplier .experience-content{width:65%}
+.experience-suplier .experience-content .paragraph-hide{max-height:100px}
+
+/* experiences */
+.experience-container .blogs-tab ul{flex-wrap: wrap;}
+
+.hightlight-tour .container .content-hl-tour .div-hidden font a{color:#d0b316}
+.hightlight-tour .container .content-hl-tour .div-hidden font a:hover{text-decoration: underline;}
+/* Footer company trust*/
+.tooltip-itine{position: relative;}
+.tooltip-itine .tooltip {display: inline-block;position: static;cursor: pointer;}
+.tooltip-itine .tooltip span {background-color: #d0b316;color: #fff;}
+.tooltip-itine .tooltip span:after {background-color: #d0b316;box-shadow: none;}
+footer .brand-section .brand-magazine li a {transition: none}
+footer .brand-section .brand-magazine li a.asta-bg {width: 130px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) 0 -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.family-bg {width: 145px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -150px -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.adventure-travel-bg {width: 216px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -310px -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.national-geographic-bg {width: 150px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -548px -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.washington-post-bg {width: 168px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -715px -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.tripadvisor-bg {width: 130px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -900px -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.world-travel-bg {width: 135px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -1045px -71.5px;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.asta-bg:hover {width: 130px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) 0 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.family-bg:hover {width: 145px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -150px 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.adventure-travel-bg:hover {width: 216px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -310px 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.national-geographic-bg:hover {width: 150px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -548px 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.washington-post-bg:hover {width: 168px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -715px 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.tripadvisor-bg:hover {width: 130px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -900px 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+footer .brand-section .brand-magazine li a.world-travel-bg:hover {width: 135px;height: 58px;background: url(/images/asiatours/footer-logo-asia-trust.jpg) -1045px 0;background-size: 1181px;display:inline-block;margin-right:0px;}
+/* Group Tours */
+.wrap-group-item-1 .blogs-tab ul li a{font-size: 12px}
+
+@media (max-width: 991px) {
+  .wrap-slide-st8 {margin-bottom: 15px;}
+  .wrap-group-item-1{width: 95%;}
+  .wrap-group-item-1 .blogs-tab{overflow: auto;}
+}
+
+@media (max-width: 767px) {
+  .wrap-title-top-country h1{font-size: 30px;}
+}
