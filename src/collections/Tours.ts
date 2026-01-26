@@ -494,7 +494,7 @@ export const Tours: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      async ({ data, req }) => {
+      async ({ data, req, operation, originalDoc }) => {
         // Auto-generate slug from title if not provided
         if (data?.title && !data?.slug) {
           data.slug = data.title
@@ -503,48 +503,68 @@ export const Tours: CollectionConfig = {
             .replace(/^-|-$/g, '')
         }
 
-        // Auto-generate routeTitle and routeSlug based on countries
-        if (data?.countries && Array.isArray(data.countries) && data.countries.length > 0) {
+        // --- INTELLIGENT ROUTE & TYPE GENERATION SCRIPT (FIXED FOR BULK UPDATES) ---
+        // Determine the effective list of countries to process
+        // In an 'update', if data.countries is missing (partial update), we must use originalDoc.countries
+        // If data.countries is present (user changed it), we use data.countries
+        let effectiveCountries = data?.countries;
+        
+        if (operation === 'update' && typeof data?.countries === 'undefined') {
+            effectiveCountries = originalDoc?.countries;
+        }
+
+        // Only proceed if we have valid countries data
+        if (effectiveCountries && Array.isArray(effectiveCountries) && effectiveCountries.length > 0) {
             try {
                 // Fetch country details to get names (ids might be passed)
-                // data.countries can be array of IDs or objects
-                const countryIds = data.countries.map((c: any) => (typeof c === 'object' ? c.id : c));
+                // effectiveCountries can be array of IDs or objects
+                const countryIds = effectiveCountries
+                    .map((c: any) => (typeof c === 'object' ? c?.id : c))
+                    .filter((id: any) => typeof id === 'string' || typeof id === 'number'); // Filter out invalid IDs
                 
-                // We need to fetch the countries to get their names and sort/order them
-                // Assuming standard ordering: Vietnam > Cambodia > Laos > Thailand > Myanmar
-                const standardOrder = ['vietnam', 'cambodia', 'laos', 'thailand', 'myanmar'];
-                
-                const countriesDocs = await req.payload.find({
-                    collection: 'countries',
-                    where: {
-                        id: { in: countryIds }
-                    },
-                    pagination: false
-                });
+                if (countryIds.length > 0) {
+                     // standardOrder to sort names logically
+                    const standardOrder = ['vietnam', 'cambodia', 'laos', 'thailand', 'myanmar'];
+                    
+                    const countriesDocs = await req.payload.find({
+                        collection: 'countries',
+                        where: {
+                            id: { in: countryIds }
+                        },
+                        pagination: false
+                    });
 
-                if (countriesDocs.docs.length > 0) {
-                     const sortedDocs = countriesDocs.docs.sort((a: any, b: any) => {
-                        const idxA = standardOrder.indexOf(a.slug);
-                        const idxB = standardOrder.indexOf(b.slug);
-                        // If not in list (unknown slug), put at end
-                        return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-                     });
-                     
-                     const countryNames = sortedDocs.map((c: any) => c.name);
-                     const countrySlugs = sortedDocs.map((c: any) => c.slug);
-                     
-                     data.routeTitle = `${countryNames.join(' ')} Tours`; 
-                     data.routeSlug = countrySlugs.join('-');
-                     data.tourType = sortedDocs.length > 1 ? 'multi-country' : 'single-country';
+                    if (countriesDocs.docs.length > 0) {
+                        const sortedDocs = countriesDocs.docs.sort((a: any, b: any) => {
+                            const idxA = standardOrder.indexOf(a.slug);
+                            const idxB = standardOrder.indexOf(b.slug);
+                            // If not in list (unknown slug), put at end
+                            return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+                        });
+                        
+                        const countryNames = sortedDocs.map((c: any) => c.name);
+                        const countrySlugs = sortedDocs.map((c: any) => c.slug);
+                        
+                        // Only update these fields if we successfully calculated them
+                        data.routeTitle = `${countryNames.join(' ')} Tours`; 
+                        data.routeSlug = countrySlugs.join('-');
+                        data.tourType = sortedDocs.length > 1 ? 'multi-country' : 'single-country';
+                    }
                 }
-
             } catch (error) {
                 console.error('Error generating route info:', error);
-                // Fallback or ignore
+                // Fail gracefully: Do not crash the update, just keep existing values
             }
-        } else {
+        } 
+        // Case: User explicitly cleared countries (empty array) -> Set to single-country default or handle as error?
+        // Assuming we default to 'single-country' if no countries found in data, ONLY IF we are sure it's not a partial update that missed it.
+        // If effectiveCountries is explicitly empty array [], it means user removed all countries.
+        else if (Array.isArray(effectiveCountries) && effectiveCountries.length === 0) {
              data.tourType = 'single-country';
         }
+        
+        // If effectiveCountries was undefined (partial update without countries field), we do NOTHING to tourType.
+        // This prevents overwriting existing tourType during unrelated bulk updates.
 
         return data
       },
