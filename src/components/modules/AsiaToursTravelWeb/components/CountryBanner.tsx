@@ -1,26 +1,31 @@
-import type { Media } from '../types'
+import React from 'react'
+import { BookingWidget } from './BookingWidget'
 
 interface CountryBannerProps {
-  title: string
+  bannerUrl: string
+  title?: string   // Override title, defaults to country-based
   subtitle?: string
-  backgroundImage: string | Media
 }
 
-export function CountryBanner({ title, subtitle, backgroundImage }: CountryBannerProps) {
-  const bgUrl = typeof backgroundImage === 'string' 
-    ? backgroundImage 
-    : backgroundImage?.url || ''
-
+export function CountryBanner({ bannerUrl, title, subtitle }: CountryBannerProps) {
   return (
-    <section className="banner-top banner-small-2 banner-country-2">
+    <section className="banner-top mg-bot-0 banner-small">
       <div 
-        className="bg-detail" 
-        style={{ backgroundImage: `url(${bgUrl})` }}
-      ></div>
+        className="bg-parallax bg-travel-guide"
+        style={bannerUrl ? { 
+          backgroundImage: `url(${bannerUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        } : undefined}
+      />
       <div className="wrap-title-banner-top-line">
-        <h1 className="title-h1">{title}</h1>
-        {subtitle && <p className="subtitle">{subtitle}</p>}
+        <h2 className="line">{title}</h2>
+        <p>{subtitle}</p>
       </div>
+      
+      {/* Booking Widget inside Hero Section */}
+      <BookingWidget />
+
     </section>
   )
 }

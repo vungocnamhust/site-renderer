@@ -6,6 +6,7 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
+import { Tags } from './collections/Tags'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Tenants } from './collections/Tenants'
@@ -15,6 +16,8 @@ import { Blogs } from './collections/Blogs'
 import { TourCategories } from './collections/TourCategories'
 import { Countries } from './collections/Countries'
 import { Destinations } from './collections/Destinations'
+import { FAQs } from './collections/FAQs'
+
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -37,7 +40,9 @@ export default buildConfig({
       titleSuffix: ' | Capella Web Engine',
     },
   },
-  collections: [Users, Media, Tenants, Tours, TourCategories, Blogs, Experiences, Countries, Destinations],
+  cors: '*',
+  csrf: [], // Disable CSRF for easier local dev or configure properly later
+  collections: [Users, Media, Tenants, Tours, TourCategories, Blogs, Experiences, Countries, Destinations, Tags, FAQs],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

@@ -54,6 +54,10 @@ const MOCK_DATA: AsiaToursTravelWebData = {
           icon: 'https://d2lwt6tidfiof0.cloudfront.net/images/otm_home/h4.webp'
       }
   ],
+  signature: {
+    icon: 'https://d2lwt6tidfiof0.cloudfront.net/images/destination/vietnam.jpg'
+  },
+
   footer: {
     copyright: '© 2024 Asia Tours. All rights reserved.',
     aboutText: 'Award-winning travel company offering professional, safe, hassle free and best Asia Private tours.',

@@ -6,9 +6,15 @@ interface TourCardProps {
 }
 
 export function TourCard({ tour }: TourCardProps) {
+  // @ts-ignore - countries is a relationship field
+  const countries = (tour as any).countries as any[] || [];
+  const firstCountry = countries.length > 0 && typeof countries[0] === 'object' ? countries[0] : null;
+  const countrySlug = firstCountry?.slug || 'vietnam';
+  const countryName = firstCountry?.name || 'Asia';
+  
   // Construct URL
-  const href = tour.country 
-    ? `/${tour.country}/tours/${tour.slug}`
+  const href = countrySlug 
+    ? `/${countrySlug}/tours/${tour.slug}`
     : `/tours/${tour.slug}`
 
   // Image URL handling
@@ -35,7 +41,7 @@ export function TourCard({ tour }: TourCardProps) {
         </p>
       </div>
       <div className="count-day">
-        {tour.country ? tour.country.charAt(0).toUpperCase() + tour.country.slice(1) : 'Asia'}
+        {countryName}
       </div>
       
       {/* Tooltip wrapper (Simplified for now) */}

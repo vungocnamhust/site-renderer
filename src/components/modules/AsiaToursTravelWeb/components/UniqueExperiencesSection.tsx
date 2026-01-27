@@ -13,16 +13,17 @@ export function UniqueExperiencesSection({ items }: { items?: UniqueExperienceIt
       </div>
       <div className="container">
         <div className="wrap-slide-st2">
-          <div className="synch-carousels">
-            <div className="gallery" style={{ display: 'flex', overflowX: 'auto', gap: '20px', paddingBottom: '20px' }}>
-              {items.map((item, idx) => {
-                 const imageUrl = typeof item.image === 'string' ? item.image : item.image?.url
-                 return (
-                  <div className="item" key={idx} style={{ minWidth: '350px', flex: '0 0 auto' }}>
+          {/* Changed from inline flex carousel to Responsive Grid */}
+          <div className="row justify-content-center">
+            {items.map((item, idx) => {
+               const imageUrl = typeof item.image === 'string' ? item.image : item.image?.url
+               return (
+                <div className="col-xlg-4 col-lg-6 col-md-12 mb-5" key={idx}>
+                  <div className="item">
                     <div className="theme-slide-img">
                       <Link href={item.link || '#'} title={item.title}>
                         {imageUrl && (
-                          <img src={imageUrl} alt={item.title} style={{ width: '100%', height: 'auto' }} />
+                          <img src={imageUrl} alt={item.title} className="w-100 h-auto" style={{ objectFit: 'cover' }} />
                         )}
                       </Link>
                     </div>
@@ -38,14 +39,16 @@ export function UniqueExperiencesSection({ items }: { items?: UniqueExperienceIt
                       </div>
                     </div>
                   </div>
-                 )
-              })}
-            </div>
+                </div>
+               )
+            })}
+          </div>
             
-            <div className="view-more-wrap">
-              <Link href="/experiences" className="arrow-radius">
-                  <i className="icon-font select-arrow-thin"></i>
-              </Link>
+          <div className="view-more-wrap text-center mt-5">
+            <Link href="/experiences" className="arrow-radius">
+                <i className="icon-font select-arrow-thin"></i>
+            </Link>
+            <div className="mt-2">
               <Link href="/experiences" className="link-st3" title="All Tour Experiences">Click to view more experiences</Link>
             </div>
           </div>

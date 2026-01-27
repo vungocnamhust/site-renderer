@@ -60,6 +60,16 @@ export const Countries: CollectionConfig = {
       }
     },
     {
+      name: 'faqs',
+      type: 'relationship',
+      relationTo: 'faqs',
+      hasMany: true,
+      label: 'Curated FAQs',
+      admin: {
+        description: 'Select specific FAQs to display on this country page.',
+      },
+    },
+    {
       name: 'description',
       type: 'richText',
       label: 'Description/Overview',

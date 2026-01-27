@@ -38,17 +38,31 @@ async function seed() {
 
       let imageId: string | number | null = null
       
-      // Map Country & Tour Type
-      let countryValue: any = 'vietnam'
+      // Map Country to Country ID (needs to be looked up)
+      let countrySlug: string = 'vietnam'
       let tourType: any = 'single-country'
       
       const slugParts = tour.countryRef?.split('-') || []
-      if (slugParts.includes('vietnam')) countryValue = 'vietnam'
-      else if (slugParts.includes('cambodia')) countryValue = 'cambodia'
-      else if (slugParts.includes('thailand')) countryValue = 'thailand'
-      else if (slugParts.includes('laos')) countryValue = 'laos'
+      if (slugParts.includes('vietnam')) countrySlug = 'vietnam'
+      else if (slugParts.includes('cambodia')) countrySlug = 'cambodia'
+      else if (slugParts.includes('thailand')) countrySlug = 'thailand'
+      else if (slugParts.includes('laos')) countrySlug = 'laos'
       
       if (slugParts.length > 1) tourType = 'multi-country'
+      
+      // Look up country ID
+      let countryIds: number[] = []
+      try {
+        const countryDoc = await payload.find({
+          collection: 'countries',
+          where: { slug: { equals: countrySlug } }
+        })
+        if (countryDoc.docs.length > 0) {
+          countryIds = [countryDoc.docs[0].id]
+        }
+      } catch (e) {
+        console.warn(`Country lookup failed for ${countrySlug}`)
+      }
       
       // Upload Media
       if (tour.image) {
@@ -86,13 +100,13 @@ async function seed() {
          }
       }
       
-      const data = {
+      const data: any = {
         title: tour.title,
         slug: normalizedSlug,
         shortDescription: tour.overview, 
         price: tour.price ? parseFloat(tour.price.replace(/[$,]/g, '')) || 0 : undefined,
         duration: tour.duration,
-        country: countryValue,
+        countries: countryIds.length > 0 ? countryIds : undefined,
         tourType: tourType,
         featuredImage: imageId,
         isActive: true
@@ -107,6 +121,7 @@ async function seed() {
         })
       } else {
         console.log(`Creating: ${tour.slug}`)
+        // @ts-ignore - draft requirement for create seems to be a strict TypeScript inference issue
         await payload.create({
           collection: 'tours',
           data

@@ -4333,56 +4333,58 @@ footer {
       color: #333; }
     #booking-widget-homepage .form-banner-top .booking-step-where {
       position: relative;
-      width: 23%; }
+      width: 25%; }
       #booking-widget-homepage .form-banner-top .booking-step-where .value {
         top: calc(100% + 15px); }
         #booking-widget-homepage .form-banner-top .booking-step-where .value .btn-value .map-marker, #booking-widget-homepage .form-banner-top .booking-step-where .value .btn-value .icon-destination {
           margin-right: 8px;
           font-size: 15px;
           color: #d0b316;
-          -webkit-transition: all 0.25s linear;
-          -moz-transition: all 0.25s linear;
-          -o-transition: all 0.25s linear;
-          -ms-transition: all 0.25s linear;
           transition: all 0.25s linear; }
         #booking-widget-homepage .form-banner-top .booking-step-where .value .btn-value:hover .map-marker, #booking-widget-homepage .form-banner-top .booking-step-where .value .btn-value:hover .icon-destination {
           color: #111; }
-    #booking-widget-homepage .form-banner-top .booking-step-when {
+    
+    /* ADDED: Booking Step What */
+    #booking-widget-homepage .form-banner-top .booking-step-what {
       position: relative;
-      width: 23%; }
-      #booking-widget-homepage .form-banner-top .booking-step-when .value {
+      width: 25%; }
+      #booking-widget-homepage .form-banner-top .booking-step-what .value {
         top: calc(100% + 15px); }
-        #booking-widget-homepage .form-banner-top .booking-step-when .value .btn-value {
+        #booking-widget-homepage .form-banner-top .booking-step-what .value .btn-value {
           padding-left: 15px; }
-          #booking-widget-homepage .form-banner-top .booking-step-when .value .btn-value .icon-font:first-child {
+          #booking-widget-homepage .form-banner-top .booking-step-what .value .btn-value .icon-font:first-child {
             display: inline-block;
             margin-right: 8px;
             font-size: 22px;
             color: #d0b316;
-            -webkit-transition: all 0.25s linear;
-            -moz-transition: all 0.25s linear;
-            -o-transition: all 0.25s linear;
-            -ms-transition: all 0.25s linear;
             transition: all 0.25s linear; }
-            #booking-widget-homepage .form-banner-top .booking-step-when .value .btn-value .icon-font:first-child:before {
-              color: #d0b316; }
-          #booking-widget-homepage .form-banner-top .booking-step-when .value .btn-value:hover b {
-            color: #d0b316; }
+          #booking-widget-homepage .form-banner-top .booking-step-what .value .btn-value:hover b {
+             color: #d0b316; }
+
+    /* ADDED: Booking Step Who */
+    #booking-widget-homepage .form-banner-top .booking-step-who {
+      position: relative;
+      width: 30%; }
+      #booking-widget-homepage .form-banner-top .booking-step-who .value-2 {
+        top: calc(100% + 15px); }
+      #booking-widget-homepage .form-banner-top .booking-step-who .text {
+         /* Ensure text is vertically centered */
+         height: auto;
+         padding: 10px 0;
+      }
+
+    /* Legacy classes kept hidden */
+    #booking-widget-homepage .form-banner-top .booking-step-when {
+      display: none; } 
+
     #booking-widget-homepage .form-banner-top .booking-step-room {
-      position: relative;
-      width: 18%; }
-      #booking-widget-homepage .form-banner-top .booking-step-room .value-2 {
-        top: calc(100% + 15px); }
+      display: none; }
+
     #booking-widget-homepage .form-banner-top .booking-step-promo {
-      position: relative;
-      width: 18%;
-      border-right: none; }
-      #booking-widget-homepage .form-banner-top .booking-step-promo .value {
-        top: calc(100% + 15px); }
-        #booking-widget-homepage .form-banner-top .booking-step-promo .value .btn-value {
-          padding-left: 15px; }
+      display: none; }
+
     #booking-widget-homepage .form-banner-top .booking-step-submit {
-      width: 18%;
+      width: 20%;
       border-right: none;
       padding: 0;
       margin: 0;
@@ -7270,7 +7272,7 @@ footer {
     bottom: 20px;
     width: 100%; } }
 .bg-travel-guide {
-  background-image: url("/images/asiatours/background/bg-travel-guide.jpg");
+  background-image: url("https://d2lwt6tidfiof0.cloudfront.net/images/background/asia-tours-2.webp");
   height: 100%;
   -webkit-filter: brightness(60%);
   filter: brightness(60%); }

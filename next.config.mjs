@@ -5,6 +5,16 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'd2lwt6tidfiof0.cloudfront.net',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   // Your Next.js config here
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

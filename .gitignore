@@ -60,3 +60,7 @@ src/components/modules/AsiaToursTravelWeb/www.asiatours.com:tours:vietnam-cambod
 src/components/www.asiatours.com:experiences:experiencing-kayaking-in-halong-bay
 src/components/www.asiatours.com:vietnam:experiences
 .cursor
+src/components/modules/AsiaToursTravelWeb/www.asiatours.com:blog:detail
+.agent
+src/components/modules/AsiaToursTravelWeb/www.asiatours.com:country_experiences
+src/components/modules/AsiaToursTravelWeb/www.asiatours.com:detail-experience

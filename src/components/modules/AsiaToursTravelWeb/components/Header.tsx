@@ -15,16 +15,13 @@ export function Header({ data, navigation, tourStyles }: HeaderProps) {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [openThemes, setOpenThemes] = useState(false) 
   const [multiCountryRoutes, setMultiCountryRoutes] = useState<{ title: string; slug: string }[]>([])
+  const [categories, setCategories] = useState<{ id: string; slug: string; title: string }[]>([])
   
-  // Fetch Multi-Country Routes
+  // Fetch Multi-Country Routes and Tags
   useEffect(() => {
      // Fetch tours that are multi-country
      const fetchRoutes = async () => {
          try {
-             // In a real app we might have a dedicated endpoint for aggregations. 
-             // Here we fetch tours and deduplicate client side for simplicity as per plan.
-             // Manual encoding to avoid 'qs' dependency if not available client-side
-             // where[tourType][equals]=multi-country
              const query = 'where%5BtourType%5D%5Bequals%5D=multi-country&limit=100'
              const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || ''
              const res = await fetch(`${baseUrl}/api/tours?${query}`)
@@ -45,6 +42,23 @@ export function Header({ data, navigation, tourStyles }: HeaderProps) {
          }
      }
      fetchRoutes();
+
+     // Fetch Tour Categories
+     const fetchCategories = async () => {
+         try {
+             // Fetch all categories
+             const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || ''
+             const res = await fetch(`${baseUrl}/api/tour-categories?limit=100`)
+             const json = await res.json()
+             
+             if (json.docs) {
+                 setCategories(json.docs)
+             }
+         } catch (e) {
+             console.error("[Header] Failed to fetch categories", e)
+         }
+     }
+     fetchCategories()
   }, [])
 
   const toggleMenu = (path: number | string, hasChildren: boolean, e: React.MouseEvent) => {
@@ -214,12 +228,12 @@ export function Header({ data, navigation, tourStyles }: HeaderProps) {
                 </a>
                 
                 {/* Dynamic Categories */}
-                {tourStyles && (
+                {categories.length > 0 && (
                    <ul className="sub-menu" style={{ display: openThemes ? 'block' : 'none', visibility: 'visible', opacity: 1, height: 'auto' }}>
-                     {tourStyles.map((style, idx) => (
-                       <li key={idx} className="sub-menu-title-lv2">
-                         <Link href={style.link || '#'} title={style.title}>
-                           <span>{style.title}</span>
+                     {categories.map((cat) => (
+                       <li key={cat.id} className="sub-menu-title-lv2">
+                         <Link href={`/tours/${cat.slug}`} title={cat.title}>
+                           <span>{cat.title}</span>
                          </Link>
                        </li>
                      ))}
@@ -245,16 +259,16 @@ export function Header({ data, navigation, tourStyles }: HeaderProps) {
                     </div>
                  </a>
                  <ul className="sub-menu" style={{ display: activeMenu === 'experiences' ? 'block' : 'none', visibility: 'visible', opacity: 1, height: 'auto' }}>
-                    <li className="sub-menu-title-lv2"><Link href="/travel-guide?tab=experiences&country=vietnam"><span>Vietnam</span></Link></li>
-                    <li className="sub-menu-title-lv2"><Link href="/travel-guide?tab=experiences&country=laos"><span>Laos</span></Link></li>
-                    <li className="sub-menu-title-lv2"><Link href="/travel-guide?tab=experiences&country=thailand"><span>Thailand</span></Link></li>
-                    <li className="sub-menu-title-lv2"><Link href="/travel-guide?tab=experiences&country=cambodia"><span>Cambodia</span></Link></li>
+                    <li className="sub-menu-title-lv2"><Link href="/vietnam/experiences"><span>Vietnam</span></Link></li>
+                    <li className="sub-menu-title-lv2"><Link href="/laos/experiences"><span>Laos</span></Link></li>
+                    <li className="sub-menu-title-lv2"><Link href="/thailand/experiences"><span>Thailand</span></Link></li>
+                    <li className="sub-menu-title-lv2"><Link href="/cambodia/experiences"><span>Cambodia</span></Link></li>
                  </ul>
               </li>
 
               {/* === TRAVEL GUIDE === */}
               <li className="sub-menu-title">
-                 <Link href="/travel-guide?tab=guide" title="Travel Guide">
+                 <Link href="/blog" title="Travel Guide">
                     <i className="icon-font icon-menu-4"></i>
                     <span>Travel Guide</span>
                     {/* No children, so no arrow */}
@@ -263,7 +277,7 @@ export function Header({ data, navigation, tourStyles }: HeaderProps) {
 
               {/* === PRE-DEPARTURE (Optional, keeping as simple link) === */}
               <li className="sub-menu-title">
-                 <Link href="/travel-guide?tab=pre-departure" title="Pre-Departure">
+                 <Link href="/pre-departure" title="Pre-Departure">
                     <i className="icon-font icon-menu-4"></i>
                     <span>Pre-Departure</span>
                  </Link>

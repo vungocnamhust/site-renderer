@@ -17,9 +17,11 @@ export function TourDestinationsSection({ tour }: TourDestinationsSectionProps) 
     { name: 'Nha Trang', duration_days: 4 }
   ];
 
-  const countryName = tour.country 
-    ? tour.country.charAt(0).toUpperCase() + tour.country.slice(1) 
-    : 'Vietnam';
+  // @ts-ignore - countries is a relationship field
+  const countries = tour.countries as any[] || [];
+  const firstCountry = countries.length > 0 && typeof countries[0] === 'object' ? countries[0]?.name : null;
+  const countryName = firstCountry || 'Vietnam';
+  const countrySlug = firstCountry ? firstCountry.toLowerCase() : 'vietnam';
 
   // Generate image URL for destination
   const getDestinationImage = (name: string) => {
@@ -35,7 +37,7 @@ export function TourDestinationsSection({ tour }: TourDestinationsSectionProps) 
           <div className="box-img-st2">
             <img 
               className="lag-img" 
-              src={`https://d2lwt6tidfiof0.cloudfront.net/images/destination/${tour.country || 'vietnam'}.jpg`} 
+              src={`https://d2lwt6tidfiof0.cloudfront.net/images/destination/${countrySlug}.jpg`} 
               alt={countryName} 
             />
           </div>

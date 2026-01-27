@@ -1,5 +1,6 @@
 
 import type { CollectionConfig } from 'payload'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 
 export const Experiences: CollectionConfig = {
   slug: 'experiences',
@@ -17,6 +18,22 @@ export const Experiences: CollectionConfig = {
       type: 'text',
       required: true,
       label: 'Experience Title',
+    },
+    {
+      name: 'duration',
+      type: 'text',
+      label: 'Duration (e.g. 2-3 hours, Full Day)',
+      admin: {
+        position: 'sidebar'
+      },
+      hooks: {
+        beforeValidate: [
+            ({ value }: any) => {
+                if (typeof value !== 'string') return undefined; // Return undefined if not string to allow optional/null
+                return value;
+            }
+        ]
+      }
     },
     {
       name: 'slug',
@@ -92,7 +109,13 @@ export const Experiences: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
-      label: 'Detailed Content'
+      label: 'Detailed Content',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }: { defaultFeatures: any[] }) => [
+          ...defaultFeatures,
+          // Ensure we have common features enabled to avoid parsing errors with existing data
+        ]
+      })
     },
     {
       type: 'row',

@@ -1,4 +1,6 @@
-import { getMultiCountryTours } from '../lib/api'
+import { getMultiCountryTours, getFaqsByMultiCountry } from '../lib/api'
+import { lexicalToString } from '../lib/utils'
+import { FaqSection } from '../components/FaqSection'
 import type { AsiaToursTravelWebData } from '../types'
 import type { Tour } from '@/payload-types'
 import { Header } from '../components/Header'
@@ -24,6 +26,25 @@ export async function MultiCountryToursPage({ data, slug, searchParams }: MultiC
   // Cast
   const displayTours = tours as unknown as Tour[]
   
+  // Fetch FAQs based on countries in the tours
+  const countryIds = new Set<number>()
+  displayTours.forEach(tour => {
+      if (tour.countries && Array.isArray(tour.countries)) {
+          tour.countries.forEach(c => {
+              const id = typeof c === 'object' ? c.id : c
+              if (id) countryIds.add(id)
+          })
+      }
+  })
+  
+  const faqsDocs = await getFaqsByMultiCountry(Array.from(countryIds))
+  const faqs = faqsDocs.map(f => ({
+      question: f.question,
+      answer: lexicalToString(f.answer)
+  }))
+  
+  const faqsToDisplay = faqs.length > 0 ? faqs : data.faqs
+  
   // If pageConfig is missing (e.g. unknown slug), fallback or 404
   if (!pageConfig) {
       // For now fallback to generic if possible, or just render with empty strings
@@ -44,7 +65,7 @@ export async function MultiCountryToursPage({ data, slug, searchParams }: MultiC
         <CountryBanner 
           title={title} 
           subtitle={subtitle} 
-          backgroundImage={image} 
+          bannerUrl={image} 
         />
         
         <section className="intro-country-tour">
@@ -75,6 +96,9 @@ export async function MultiCountryToursPage({ data, slug, searchParams }: MultiC
              )}
           </div>
         </section>
+
+        {/* FAQs */}
+        <FaqSection items={faqsToDisplay} />
       </main>
 
       <Footer data={footer} />

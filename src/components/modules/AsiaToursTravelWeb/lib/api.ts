@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import type { Tour, Blog } from '@/payload-types'
+import type { Tour, Blog, Experience, Faq } from '@/payload-types'
 
 /**
  * Get the Payload instance with the project config
@@ -59,11 +59,19 @@ export async function getToursByCountry(countrySlug: string): Promise<Tour[]> {
     
     const countryId = countries[0].id
     
+    // Guard against invalid ID
+    if (!countryId) {
+        console.warn(`Country ID not found for slug: ${countrySlug}`)
+        return []
+    }
+
+    console.log(`[getToursByCountry] Fetching tours for country: ${countrySlug} (ID: ${countryId})`)
+    
     const { docs } = await payload.find({
         collection: 'tours',
         where: {
             and: [
-                { 'countries': { equals: countryId } },
+                { 'countries': { in: [countryId] } },
                 { isActive: { equals: true } }
             ]
         },
@@ -130,4 +138,179 @@ export async function getBlogBySlug(slug: string): Promise<Blog | null> {
         depth: 1
     })
     return (docs[0] as unknown as Blog) || null
+}
+
+/**
+ * Fetch experiences for a specific country
+ */
+export async function getExperiencesByCountry(countrySlug: string, destination?: string): Promise<Experience[]> {
+    const payload = await getPayloadClient()
+    
+    // First, lookup the country by slug to get its ID
+    const { docs: countries } = await payload.find({
+        collection: 'countries',
+        where: { slug: { equals: countrySlug } },
+        limit: 1
+    })
+    
+    if (countries.length === 0) {
+        return []
+    }
+    
+    const countryId = countries[0].id
+    
+    const query: any = {
+        country: { equals: countryId }
+    }
+
+    if (destination && destination !== 'All') {
+        query.location = { equals: destination }
+    }
+
+    const { docs } = await payload.find({
+        collection: 'experiences',
+        where: query,
+        limit: 100
+    })
+    return docs as unknown as Experience[]
+}
+
+/**
+ * Fetch a single experience by slug
+ */
+export async function getExperienceBySlug(slug: string): Promise<Experience | null> {
+    const payload = await getPayloadClient()
+    const { docs } = await payload.find({
+        collection: 'experiences',
+        where: {
+            slug: { equals: slug }
+        },
+        limit: 1,
+        depth: 1
+    })
+    return (docs[0] as unknown as Experience) || null
+}
+
+/**
+ * Fetch general FAQs for Home Page
+ */
+export async function getGeneralFaqs(): Promise<Faq[]> {
+    const payload = await getPayloadClient()
+    const { docs } = await payload.find({
+        collection: 'faqs',
+        where: {
+            is_general: { equals: true }
+        },
+        sort: 'order',
+        limit: 10
+    })
+    return docs as unknown as Faq[]
+}
+
+/**
+ * Fetch FAQs for a specific country (Tagged + Curated)
+ */
+export async function getFaqsByCountry(countrySlug: string): Promise<Faq[]> {
+    const payload = await getPayloadClient()
+    
+    // Get Country ID and Curated FAQs
+    const { docs: countries } = await payload.find({
+        collection: 'countries',
+        where: { slug: { equals: countrySlug } },
+        limit: 1
+    })
+    
+    if (countries.length === 0) return []
+    
+    const country = countries[0]
+    const countryId = country.id
+    
+    // Extract manual curated FAQ IDs
+    // Check if faqs is array of objects (populated) or IDs (not populated)
+    // Theoretically depth=0 or 1, let's assume standard behavior.
+    let curatedFaqIds: number[] = []
+    if (country.faqs && Array.isArray(country.faqs)) {
+        curatedFaqIds = country.faqs.map(f => (typeof f === 'object' ? f.id : f))
+    }
+
+    const whereConditions: any[] = [
+        { countries: { in: [countryId] } } // Tagged
+    ]
+
+    if (curatedFaqIds.length > 0) {
+        whereConditions.push({ id: { in: curatedFaqIds } }) // Curated
+    }
+    
+    const { docs } = await payload.find({
+        collection: 'faqs',
+        where: {
+            or: whereConditions
+        },
+        sort: 'order',
+        limit: 20
+    })
+    
+    return docs as unknown as Faq[]
+}
+
+/**
+ * Fetch FAQs for a specific tour category (Tagged + Curated)
+ */
+export async function getFaqsByCategory(categorySlug: string): Promise<Faq[]> {
+    const payload = await getPayloadClient()
+    
+    const { docs: categories } = await payload.find({
+        collection: 'tour-categories',
+        where: { slug: { equals: categorySlug } },
+        limit: 1
+    })
+    
+    if (categories.length === 0) return []
+    
+    const category = categories[0]
+    const categoryId = category.id
+    
+    let curatedFaqIds: number[] = []
+    if (category.faqs && Array.isArray(category.faqs)) {
+        curatedFaqIds = category.faqs.map(f => (typeof f === 'object' ? f.id : f))
+    }
+
+    const whereConditions: any[] = [
+        { tour_categories: { in: [categoryId] } }
+    ]
+
+    if (curatedFaqIds.length > 0) {
+        whereConditions.push({ id: { in: curatedFaqIds } })
+    }
+    
+    const { docs } = await payload.find({
+        collection: 'faqs',
+        where: {
+            or: whereConditions
+        },
+        sort: 'order',
+        limit: 20
+    })
+    
+    return docs as unknown as Faq[]
+}
+
+/**
+ * Fetch FAQs for multi-country context
+ */
+export async function getFaqsByMultiCountry(countryIds: number[]): Promise<Faq[]> {
+    if (!countryIds || countryIds.length === 0) return []
+
+    const payload = await getPayloadClient()
+    
+    const { docs } = await payload.find({
+        collection: 'faqs',
+        where: {
+            countries: { in: countryIds }
+        },
+        sort: 'order',
+        limit: 20
+    })
+    
+    return docs as unknown as Faq[]
 }

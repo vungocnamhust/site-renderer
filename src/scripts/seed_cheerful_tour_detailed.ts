@@ -128,16 +128,18 @@ async function seed() {
 
   if (existing.totalDocs > 0) {
     console.log('Updating existing tour...')
+    // @ts-ignore - seed script type mismatch
     await payload.update({
       collection: 'tours',
       id: existing.docs[0].id,
-      data
+      data: data as any
     })
   } else {
     console.log('Creating new tour...')
+    // @ts-ignore - seed script type mismatch
     await payload.create({
       collection: 'tours',
-      data
+      data: data as any
     })
   }
 

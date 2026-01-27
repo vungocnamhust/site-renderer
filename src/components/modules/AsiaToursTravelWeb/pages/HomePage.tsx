@@ -1,5 +1,6 @@
 
-import { getFeaturedTours, getToursByCountry, getMultiCountryTours } from '../lib/api'
+import { getFeaturedTours, getToursByCountry, getMultiCountryTours, getGeneralFaqs } from '../lib/api'
+import { lexicalToString } from '../lib/utils'
 import type { AsiaToursTravelWebData } from '../types'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
@@ -29,6 +30,15 @@ export async function HomePage({ data }: { data: AsiaToursTravelWebData }) {
   const multiCountryTours = (data.multiCountryTours && data.multiCountryTours.length > 0) 
     ? data.multiCountryTours 
     : dynamicMultiCountryTours
+
+  // Fetch General FAQs
+  const generalFaqsDocs = await getGeneralFaqs()
+  const generalFaqs = generalFaqsDocs.map(f => ({
+    question: f.question,
+    answer: lexicalToString(f.answer)
+  }))
+
+  const faqsToDisplay = generalFaqs.length > 0 ? generalFaqs : data.faqs
 
   return (
     <div className="app">
@@ -67,7 +77,7 @@ export async function HomePage({ data }: { data: AsiaToursTravelWebData }) {
         <TravelGuideSection items={data.featuredBlogs} />
 
         {/* Section 10: FAQs */}
-        <FaqSection items={data.faqs} />
+        <FaqSection items={faqsToDisplay} />
 
         {/* Section 11: Customer Reviews */}
         <CustomerReviewsSection items={data.recentTravels} />

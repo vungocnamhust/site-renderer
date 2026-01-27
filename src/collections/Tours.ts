@@ -153,6 +153,17 @@ export const Tours: CollectionConfig = {
           position: 'sidebar'
       }
     },
+    {
+      name: 'tags',
+      label: 'Tags',
+      type: 'relationship',
+      relationTo: 'tags',
+      hasMany: true,
+      admin: {
+        description: 'Thẻ tag cho tour (VD: History, Local Life)',
+        position: 'sidebar',
+      },
+    },
 
     // === PRICING & DURATION ===
     {
@@ -495,6 +506,13 @@ export const Tours: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, req, operation, originalDoc }) => {
+        console.log('--- DEBUG: Tour beforeChange Hook ---');
+        console.log('Operation:', operation);
+        console.log('Tour ID:', originalDoc?.id || data?.id);
+        console.log('Data Countries (type):', typeof data?.countries, Array.isArray(data?.countries));
+        console.log('Data Countries (value):', JSON.stringify(data?.countries));
+        console.log('OriginalDoc Countries (value):', JSON.stringify(originalDoc?.countries));
+
         // Auto-generate slug from title if not provided
         if (data?.title && !data?.slug) {
           data.slug = data.title

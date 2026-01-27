@@ -6,6 +6,7 @@
  */
 
 import type { CollectionConfig } from 'payload'
+import { lexicalEditor, UploadFeature } from '@payloadcms/richtext-lexical'
 
 export const Blogs: CollectionConfig = {
   slug: 'blogs',
@@ -99,8 +100,16 @@ export const Blogs: CollectionConfig = {
       name: 'content',
       label: 'Content',
       type: 'richText',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          // UploadFeature enables inline image/media insertion
+          // No additional config needed - it will use all upload collections by default
+          UploadFeature(),
+        ],
+      }),
       admin: {
-        description: 'Nội dung đầy đủ của bài viết',
+        description: 'Nội dung đầy đủ của bài viết - có thể chèn hình ảnh xen kẽ',
       },
     },
 
@@ -170,6 +179,17 @@ export const Blogs: CollectionConfig = {
       hasMany: true,
       admin: {
         description: 'Điểm đến liên quan',
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'relatedPosts',
+      label: 'Related Posts',
+      type: 'relationship',
+      relationTo: 'blogs',
+      hasMany: true,
+      admin: {
+        description: 'Bài viết liên quan hiển thị ở cuối trang',
         position: 'sidebar',
       },
     },

@@ -76,6 +76,8 @@ export interface Config {
     experiences: Experience;
     countries: Country;
     destinations: Destination;
+    tags: Tag;
+    faqs: Faq;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,6 +94,8 @@ export interface Config {
     experiences: ExperiencesSelect<false> | ExperiencesSelect<true>;
     countries: CountriesSelect<false> | CountriesSelect<true>;
     destinations: DestinationsSelect<false> | DestinationsSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
+    faqs: FaqsSelect<false> | FaqsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -473,6 +477,10 @@ export interface Tour {
    */
   categories?: (number | TourCategory)[] | null;
   /**
+   * Thẻ tag cho tour (VD: History, Local Life)
+   */
+  tags?: (number | Tag)[] | null;
+  /**
    * VD: "12 Days / 11 Nights"
    */
   duration?: string | null;
@@ -717,6 +725,10 @@ export interface Country {
   slug: string;
   code?: string | null;
   region?: ('southeast-asia' | 'east-asia' | 'south-asia') | null;
+  /**
+   * Select specific FAQs to display on this country page.
+   */
+  faqs?: (number | Faq)[] | null;
   description?: {
     root: {
       type: string;
@@ -733,6 +745,59 @@ export interface Country {
     [k: string]: unknown;
   } | null;
   featuredImage?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Frequently Asked Questions
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs".
+ */
+export interface Faq {
+  id: number;
+  question: string;
+  /**
+   * Auto-generated from question
+   */
+  slug?: string | null;
+  answer: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  countries?: (number | Country)[] | null;
+  destinations?: (number | Destination)[] | null;
+  tags?: (number | Tag)[] | null;
+  tour_categories?: (number | TourCategory)[] | null;
+  /**
+   * Check this if the FAQ is generic and should appear on the Home Page.
+   */
+  is_general?: boolean | null;
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  tag_code: string;
+  tag_name: string;
+  active?: ('Y' | 'N') | null;
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -754,6 +819,10 @@ export interface TourCategory {
    */
   heroImage?: (number | null) | Media;
   /**
+   * Select specific FAQs to display on this category page.
+   */
+  faqs?: (number | Faq)[] | null;
+  /**
    * Short description for SEO and page header
    */
   description?: string | null;
@@ -767,6 +836,7 @@ export interface TourCategory {
 export interface Experience {
   id: number;
   title: string;
+  duration?: string | null;
   /**
    * URL-friendly identifier
    */
@@ -839,7 +909,7 @@ export interface Blog {
    */
   excerpt?: string | null;
   /**
-   * Nội dung đầy đủ của bài viết
+   * Nội dung đầy đủ của bài viết - có thể chèn hình ảnh xen kẽ
    */
   content?: {
     root: {
@@ -881,6 +951,10 @@ export interface Blog {
    * Điểm đến liên quan
    */
   relatedDestinations?: (number | Destination)[] | null;
+  /**
+   * Bài viết liên quan hiển thị ở cuối trang
+   */
+  relatedPosts?: (number | Blog)[] | null;
   /**
    * Blog thuộc tenant nào
    */
@@ -955,6 +1029,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'destinations';
         value: number | Destination;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'faqs';
+        value: number | Faq;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1264,6 +1346,7 @@ export interface ToursSelect<T extends boolean = true> {
   routeTitle?: T;
   routeSlug?: T;
   categories?: T;
+  tags?: T;
   duration?: T;
   price?: T;
   priceNote?: T;
@@ -1373,6 +1456,7 @@ export interface TourCategoriesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   heroImage?: T;
+  faqs?: T;
   description?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1399,6 +1483,7 @@ export interface BlogsSelect<T extends boolean = true> {
   relatedTour?: T;
   relatedCountries?: T;
   relatedDestinations?: T;
+  relatedPosts?: T;
   tenant?: T;
   isPublished?: T;
   isFeatured?: T;
@@ -1411,6 +1496,7 @@ export interface BlogsSelect<T extends boolean = true> {
  */
 export interface ExperiencesSelect<T extends boolean = true> {
   title?: T;
+  duration?: T;
   slug?: T;
   image?: T;
   gallery?:
@@ -1445,6 +1531,7 @@ export interface CountriesSelect<T extends boolean = true> {
   slug?: T;
   code?: T;
   region?: T;
+  faqs?: T;
   description?: T;
   featuredImage?: T;
   updatedAt?: T;
@@ -1461,6 +1548,35 @@ export interface DestinationsSelect<T extends boolean = true> {
   description?: T;
   featuredImage?: T;
   geo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  tag_code?: T;
+  tag_name?: T;
+  active?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faqs_select".
+ */
+export interface FaqsSelect<T extends boolean = true> {
+  question?: T;
+  slug?: T;
+  answer?: T;
+  countries?: T;
+  destinations?: T;
+  tags?: T;
+  tour_categories?: T;
+  is_general?: T;
+  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }

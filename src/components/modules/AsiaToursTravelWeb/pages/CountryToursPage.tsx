@@ -1,20 +1,28 @@
-import type { AsiaToursTravelWebData } from '../types'
+import type { AsiaToursTravelWebData, HeroSlide } from '../types'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
-import { CountryBanner } from '../components/CountryBanner'
-import { CountryIntro } from '../components/CountryIntro'
-import { HighlightCarousel } from '../components/HighlightCarousel'
-import { TourCard } from '../components/TourCard'
+import { HeroSection } from '../components/HeroSection'
+import { BestSupportSection } from '../components/BestSupportSection'
+import { AboutSection } from '../components/AboutSection'
+import { FeaturedToursSection } from '../components/FeaturedToursSection'
+import { FeaturedToursGrid } from '../components/FeaturedToursGrid'
+import { TourStylesSection } from '../components/TourStylesSection'
+import { InquiryFormSection } from '../components/InquiryFormSection'
+import { UniqueExperiencesSection } from '../components/UniqueExperiencesSection'
+import { TravelGuideSection } from '../components/TravelGuideSection'
+import { FaqSection } from '../components/FaqSection'
+import { CustomerReviewsSection } from '../components/CustomerReviewsSection'
+import { LocalExperiencesSection } from '../components/LocalExperiencesSection'
 import { COUNTRIES } from '../data/countries'
 import { notFound } from 'next/navigation'
+import { getToursByCountry, getFaqsByCountry } from '../lib/api'
+import { lexicalToString } from '../lib/utils'
+import type { Tour } from '@/payload-types' 
 
 interface CountryToursPageProps {
   data: AsiaToursTravelWebData
   countrySlug: string
 }
-
-import { getToursByCountry } from '../lib/api'
-import type { Tour } from '@/payload-types' 
 
 export async function CountryToursPage({ data, countrySlug }: CountryToursPageProps) {
   const { siteSettings, navigation, footer } = data
@@ -27,70 +35,110 @@ export async function CountryToursPage({ data, countrySlug }: CountryToursPagePr
   }
 
   // Fetch Tours for this Country
-  const tours = await getToursByCountry(countrySlug)
-
-  // Fallback to featuredTours if fetch yields nothing
-  const fallbackTours = (data.featuredTours?.filter(t => typeof t !== 'string' && t.country === countrySlug) || []) as Tour[]
+  const allTours = await getToursByCountry(countrySlug)
   
-  const displayTours = tours.length > 0 ? tours : fallbackTours
+  // Fetch FAQs for this Country
+  const faqsDocs = await getFaqsByCountry(countrySlug)
+  const faqs = faqsDocs.map(f => ({
+      question: f.question,
+      answer: lexicalToString(f.answer)
+  }))
+  
+  const faqsToDisplay = faqs.length > 0 ? faqs : data.faqs
+
+  // 1. Filter Feature Tours (isFeatured = true)
+  const featuredTours = allTours.filter(t => t.isFeatured)
+
+  // 2. Group Tours by Category
+  const categoriesMap = new Map<string, { title: string, tours: Tour[] }>()
+
+  allTours.forEach(tour => {
+    if (tour.categories && Array.isArray(tour.categories)) {
+      tour.categories.forEach(cat => {
+        // Ensure category is populated (object) and has a title
+        if (typeof cat === 'object' && cat !== null && 'title' in cat) {
+          const catId = String(cat.id) // Using ID as map key
+          const catTitle = cat.title
+          
+          if (!categoriesMap.has(catId)) {
+            categoriesMap.set(catId, { title: catTitle, tours: [] })
+          }
+          // Avoid duplicates if needed, but simple push is okay for now
+          // Check if tour is already in this category list to be safe?
+          // (Usually not needed if iterating tours once, but a tour belongs to cat X once)
+          categoriesMap.get(catId)!.tours.push(tour)
+        }
+      })
+    }
+  })
+
+  // Sort categories if needed? Map order is insertion order usually.
+  const categorySections = Array.from(categoriesMap.values())
+
+  // Construct Hero Slides from Country Data
+  const heroSlides: HeroSlide[] = [{
+    image: country.bannerImage,
+    title: country.title,
+    subtitle: country.subtitle,
+    // link: '#' // Optional
+  }]
 
   return (
     <div className="app">
       <Header data={siteSettings} navigation={navigation} tourStyles={data.tourStyles} />
       
       <main>
-        <CountryBanner 
-          title={country.title} 
-          subtitle={country.subtitle} 
-          backgroundImage={country.bannerImage} 
-        />
+        {/* Section 1: Hero Banner (Using Country Data) */}
+        <HeroSection slides={heroSlides} />
         
-        <CountryIntro 
-          title={country.slug.charAt(0).toUpperCase() + country.slug.slice(1)} 
-          slogan={country.introSlogan} 
-          description={country.introDescription} 
-          fullDescription={country.introFullDescription}
-          stats={country.stats}
-          links={[
-            { label: 'Best Tours', href: '#', icon: '' },
-            { label: 'Experiences', href: '#', icon: 'external-link' },
-            { label: 'Destinations & Map', href: '#', icon: '' },
-            { label: 'Travel Guide', href: '#', icon: 'external-link' }
-          ]}
-        />
+        {/* Section 2: Best Support (Generic) */}
+        <BestSupportSection />
         
-        {country.highlights && country.highlights.length > 0 && (
-           <div className="list-highlight-tour">
-             <article className="wrap-mini-intro">
-               <h2 className="title-h2">Highlights in our {country.slug.charAt(0).toUpperCase() + country.slug.slice(1)} Tours</h2>
-               <p className="paragraph">With more than 10 years in creating bespoke journeys...</p>
-             </article>
-             <HighlightCarousel highlights={country.highlights} />
+        {/* Section 3: About (Generic - keeping layout consistency) */}
+        <AboutSection />
+
+        {/* Section 4: Featured Tours (Country Specific) */}
+        {featuredTours.length > 0 && (
+          <FeaturedToursSection tours={featuredTours} />
+        )}
+
+        {/* Section 5+: Dynamic Category Sections */}
+        {categorySections.map((cat, idx) => (
+          <FeaturedToursGrid 
+            key={idx}
+            tours={cat.tours}
+            title={`${country.title} - ${cat.title}`}
+            subtitle={`Explore our best ${cat.title} in ${country.title}`}
+          />
+        ))}
+        
+        {/* Fallback if no tours found */}
+        {allTours.length === 0 && (
+           <div className="container text-center p-10">
+             <p>Coming soon: Tours for {country.title}</p>
            </div>
         )}
 
-        {/* Best Tours Collection */}
-        <section className="list-trip mg-bot-0">
-          <div className="wrap-mini-intro wrap-mini-intro-2">
-            <h2 id="div-ctry-tour" className="title-h2-line">The Best {country.slug.charAt(0).toUpperCase() + country.slug.slice(1)} Tours Collection 2026 - 2027</h2>
-            <p className="paragraph">These tours bring you alluring experiences...</p>
-          </div>
-          <div className="container">
-             {displayTours && displayTours.length > 0 ? (
-               <div className="row flex flex-wrap">
-                 {displayTours.map((tour, idx) => (
-                   <div key={tour.id || idx} className="col-xlg-4 col-lg-6 col-md-12 mb-5">
-                     <TourCard tour={tour} />
-                   </div>
-                 ))}
-               </div>
-             ) : (
-               <div className="text-center p-10">
-                 <p>No tours found for {country.slug}.</p>
-               </div>
-             )}
-          </div>
-        </section>
+        {/* Section 6: Asia Tours by Styles (Global) */}
+        <TourStylesSection items={data.tourStyles} />
+
+        {/* Section 7: Inquiry Form (Global) */}
+        <InquiryFormSection />
+
+        {/* Section 8: Unique Experiences (Global) */}
+        <UniqueExperiencesSection items={data.uniqueExperiences} />
+
+        {/* Section 9: Travel Guide & Inspirations (Global) */}
+        <TravelGuideSection items={data.featuredBlogs} />
+
+        {/* Section 10: FAQs (Global) */}
+        <FaqSection items={faqsToDisplay} />
+
+        {/* Section 11: Customer Reviews (Global) */}
+        <CustomerReviewsSection items={data.recentTravels} />
+
+        {/* Section 12: Real Local Experiences (Global) */}
+        <LocalExperiencesSection data={data.locExp} />
       </main>
 
       <Footer data={footer} />

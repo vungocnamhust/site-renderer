@@ -16,6 +16,208 @@ const ASSETS_DIR = path.resolve(
 
 // Map keys to folder names and metadata
 const EXPERIENCES_DATA = [
+    {
+        title: "Golden Bridge & Ba Na Hills",
+        slug: "golden-bridge-ba-na-hills",
+        location: "Da Nang",
+        description: "Walk along the iconic Golden Bridge held by giant stone hands and explore the French village of Ba Na Hills.",
+        tags: [
+            { label: "Sightseeing", icon: "icon-sightseeing" },
+            { label: "Mountain", icon: "icon-mountain" },
+            { label: "Architecture", icon: "icon-architecture" },
+            { label: "Luxury", icon: "icon-luxury" }
+        ],
+        short_description: "Experience the breathtaking views from the Golden Bridge in Da Nang. A marvel of modern engineering and design.",
+        image: "https://placehold.co/800x600.png",
+        content: {
+            root: {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  text: "Experience the breathtaking views from the Golden Bridge in Da Nang. A marvel of modern engineering and design.",
+                  type: 'text',
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              type: 'paragraph',
+              version: 1,
+            },
+        }
+    },
+    {
+        title: "Hoi An Ancient Town Walking Tour",
+        slug: "hoi-an-ancient-town-walking-tour",
+        location: "Hoi An",
+        description: "Wander through the lantern-lit streets of Hoi An Ancient Town, a UNESCO World Heritage site.",
+        tags: [
+            { label: "Cultural", icon: "icon-cultural" },
+            { label: "History", icon: "icon-history" },
+            { label: "Walking", icon: "icon-walking" },
+            { label: "Food", icon: "icon-food" }
+        ],
+        short_description: "Immerse yourself in the charm of Hoi An. Visit ancient houses, the Japanese Covered Bridge, and local markets.",
+        image: "https://placehold.co/800x600.png",
+        content: {
+            root: {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  text: "Immerse yourself in the charm of Hoi An. Visit ancient houses, the Japanese Covered Bridge, and local markets.",
+                  type: 'text',
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              type: 'paragraph',
+              version: 1,
+            },
+        }
+    },
+    {
+        title: "Cu Chi Tunnels Historical Tour",
+        slug: "cu-chi-tunnels-historical-tour",
+        location: "Ho Chi Minh City",
+        description: "Explore the vast network of underground tunnels used during the Vietnam War at Cu Chi.",
+        tags: [
+            { label: "History", icon: "icon-history" },
+            { label: "War History", icon: "icon-war-history" },
+            { label: "Adventure", icon: "icon-adventure" }
+        ],
+        short_description: "Crawl through the historic tunnels of Cu Chi and learn about the resilience of the Vietnamese people during the war.",
+        image: "https://placehold.co/800x600.png",
+        content: {
+            root: {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  text: "Crawl through the historic tunnels of Cu Chi and learn about the resilience of the Vietnamese people during the war.",
+                  type: 'text',
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              type: 'paragraph',
+              version: 1,
+            },
+        }
+    },
+    {
+        title: "Mekong Delta River Life",
+        slug: "mekong-delta-river-life",
+        location: "Mekong Delta",
+        description: "Cruise along the Mekong River, visit floating markets, and experience the local river life.",
+        tags: [
+            { label: "Nature", icon: "icon-nature" },
+            { label: "Boat Trip", icon: "icon-boat-trip" },
+            { label: "Cultural", icon: "icon-cultural" },
+            { label: "Local Life", icon: "icon-local-life" }
+        ],
+        short_description: "Discover the 'Rice Bowl' of Vietnam. Enjoy a boat trip through the canals, taste tropical fruits, and listen to folk music.",
+        image: "https://placehold.co/800x600.png",
+        content: {
+            root: {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  text: "Discover the 'Rice Bowl' of Vietnam. Enjoy a boat trip through the canals, taste tropical fruits, and listen to folk music.",
+                  type: 'text',
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              type: 'paragraph',
+              version: 1,
+            },
+        }
+    },
+    {
+        title: "Sapa Trekking Adventure",
+        slug: "sapa-trekking-adventure",
+        location: "Sapa",
+        description: "Trek through the stunning terraced rice fields of Sapa and visit local ethnic minority villages.",
+        tags: [
+            { label: "Adventure", icon: "icon-adventure" },
+            { label: "Trekking", icon: "icon-trekking" },
+            { label: "Nature", icon: "icon-nature" },
+            { label: "Cultural", icon: "icon-cultural" }
+        ],
+        short_description: "Hike through the majestic Hoang Lien Son mountains. Meet the Black Hmong and Red Dao people and learn about their distinctive cultures.",
+        image: "https://placehold.co/800x600.png",
+        content: {
+            root: {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  text: "Hike through the majestic Hoang Lien Son mountains. Meet the Black Hmong and Red Dao people and learn about their distinctive cultures.",
+                  type: 'text',
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              type: 'paragraph',
+              version: 1,
+            },
+        }
+    },
+    {
+        title: "Hue Imperial City Tour",
+        slug: "hue-imperial-city-tour",
+        location: "Hue",
+        description: "Visit the Imperial Citadel, royal tombs, and pagodas of Vietnam's former capital, Hue.",
+        tags: [
+            { label: "History", icon: "icon-history" },
+            { label: "Cultural", icon: "icon-cultural" },
+            { label: "Architecture", icon: "icon-architecture" }
+        ],
+        short_description: "Step back in time to the Nguyen Dynasty. Explore the Forbidden Purple City and the serene Thien Mu Pagoda.",
+        image: "https://placehold.co/800x600.png",
+        content: {
+            root: {
+              children: [
+                {
+                  detail: 0,
+                  format: 0,
+                  mode: 'normal',
+                  style: '',
+                  text: "Step back in time to the Nguyen Dynasty. Explore the Forbidden Purple City and the serene Thien Mu Pagoda.",
+                  type: 'text',
+                  version: 1,
+                },
+              ],
+              direction: 'ltr',
+              format: '',
+              indent: 0,
+              type: 'paragraph',
+              version: 1,
+            },
+        }
+    },
   {
     folder: 'kayak-halong',
     slug: 'experiencing-kayaking-in-beautiful-halong-bay',
@@ -183,64 +385,102 @@ async function seed() {
 
   for (const exp of EXPERIENCES_DATA) {
     console.log(`Processing: ${exp.title}`)
+    console.log(`Keys: ${Object.keys(exp)}`)
     
-    // Find images in folder
-    const folderPath = path.join(ASSETS_DIR, exp.folder)
-    
-    let images: string[] = []
-    if (fs.existsSync(folderPath)) {
-        images = fs.readdirSync(folderPath).filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file))
+    let featuredMediaId: number | string | undefined;
+    let galleryIds: { image: number | string }[] = [];
+
+    // Cast to any to avoid TS issues with union types during runtime check
+    const item = exp as any;
+
+    if (item.folder) {
+        // Existing logic for folder-based local images
+        const folderPath = path.join(ASSETS_DIR, exp.folder as string)
+        
+        let images: string[] = []
+        if (fs.existsSync(folderPath)) {
+            images = fs.readdirSync(folderPath).filter(file => /\.(jpg|jpeg|png|webp)$/i.test(file))
+        }
+
+        if (images.length === 0) {
+            console.warn(`No images found for ${exp.folder}`)
+            // continue // Don't continue, maybe we use placeholder? 
+             // actually current logic continues. let's respect that for folders.
+        } else {
+             // Upload featured
+            const featuredImageFile = images[0]
+            const featuredImagePath = path.join(folderPath, featuredImageFile)
+            const featuredImageBuffer = fs.readFileSync(featuredImagePath)
+
+            try {
+                console.log(`Uploading featured image: ${featuredImageFile}`)
+                const featuredMedia = await payload.create({
+                    collection: 'media',
+                    data: { alt: exp.title },
+                    file: {
+                        data: featuredImageBuffer,
+                        name: featuredImageFile,
+                        mimetype: getMimeType(featuredImageFile),
+                        size: featuredImageBuffer.length,
+                    }
+                })
+                featuredMediaId = featuredMedia.id
+                console.log(`Featured media created: ${featuredMediaId}`)
+            } catch (err) {
+                console.error(`Failed to upload ${featuredImageFile}:`, err)
+            }
+
+            // Gallery
+            for (const imgFile of images.slice(1, 10)) {
+                const imgPath = path.join(folderPath, imgFile)
+                const imgBuffer = fs.readFileSync(imgPath)
+                try {
+                     const media = await payload.create({
+                        collection: 'media',
+                        data: { alt: `${exp.title} - Gallery` },
+                        file: {
+                            data: imgBuffer,
+                            name: imgFile,
+                            mimetype: getMimeType(imgFile),
+                            size: imgBuffer.length,
+                        }
+                    })
+                    galleryIds.push({ image: media.id })
+                } catch(e) {}
+            }
+        }
+    } else if (item.image) {
+        // Logic for remote URL image
+        try {
+            console.log(`Fetching remote image: ${item.image}`)
+            const response = await fetch(item.image)
+            const arrayBuffer = await response.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+            
+            const filename = path.basename(exp.image as string) || 'image.jpg'
+            const mimetype = response.headers.get('content-type') || 'image/jpeg'
+
+            const featuredMedia = await payload.create({
+                collection: 'media',
+                data: { alt: exp.title },
+                file: {
+                    data: buffer,
+                    name: filename,
+                    mimetype,
+                    size: buffer.length,
+                }
+            })
+            featuredMediaId = featuredMedia.id
+            console.log(`Remote media created: ${featuredMediaId}`)
+
+        } catch (error) {
+            console.error(`Failed to fetch/upload remote image ${exp.image}:`, error)
+        }
     }
 
-    if (images.length === 0) {
-        console.warn(`No images found for ${exp.folder}`)
+    if (!featuredMediaId) {
+        console.warn(`Skipping ${exp.title} - No media created`)
         continue
-    }
-
-    // Upload featured image (first one)
-    const featuredImageFile = images[0]
-    const featuredImagePath = path.join(folderPath, featuredImageFile)
-    const featuredImageBuffer = fs.readFileSync(featuredImagePath)
-
-    let featuredMedia;
-    try {
-        console.log(`Uploading featured image: ${featuredImageFile} (${featuredImageBuffer.length} bytes, ${getMimeType(featuredImageFile)})`)
-        featuredMedia = await payload.create({
-            collection: 'media',
-            data: {
-                alt: exp.title,
-            },
-            file: {
-                data: featuredImageBuffer,
-                name: featuredImageFile,
-                mimetype: getMimeType(featuredImageFile),
-                size: featuredImageBuffer.length,
-            }
-        })
-        console.log(`Featured media created: ${featuredMedia.id}`)
-    } catch (err) {
-        console.error(`Failed to upload ${featuredImageFile}:`, err)
-        continue // Skip this experience if main image fails
-    }
-
-    // Upload gallery images (up to 10)
-    const galleryIds: { image: string, caption?: string }[] = []
-    for (const imgFile of images.slice(1, 10)) {
-        const imgPath = path.join(folderPath, imgFile)
-        const imgBuffer = fs.readFileSync(imgPath)
-        const media = await payload.create({
-            collection: 'media',
-            data: {
-                alt: `${exp.title} - Gallery`,
-            },
-            file: {
-                data: imgBuffer,
-                name: imgFile,
-                mimetype: getMimeType(imgFile),
-                size: imgBuffer.length,
-            }
-        })
-        galleryIds.push({ image: media.id as string })
     }
 
     // Check if exists
@@ -253,50 +493,24 @@ async function seed() {
 
     if (existing.docs.length > 0) {
         console.log(`Skipping existing experience: ${exp.slug}`)
-        
-        // Update images if needed, but for now skip
-        await payload.update({
-            collection: 'experiences',
-            id: existing.docs[0].id,
-            data: {
-                image: featuredMedia.id,
-                gallery: galleryIds,
-                tags: exp.tags,
-                short_description: exp.short_description,
-                location: exp.location,
-                country: 'vietnam'
-            }
-        })
+        // Optional: Update if needed.
     } else {
+        // @ts-ignore - strict typing for seed scripts
         await payload.create({
             collection: 'experiences',
             data: {
-                title: exp.title,
-                slug: exp.slug,
-                description: exp.description,
-                short_description: exp.short_description,
-                image: featuredMedia.id,
-                gallery: galleryIds,
-                tags: exp.tags,
-                location: exp.location,
-                country: 'vietnam',
-                content: exp.content || {
-                    root: {
-                        children: [
-                            {
-                                children: [{ text: exp.description, version: 1 }],
-                                direction: 'ltr',
-                                type: 'paragraph',
-                                version: 1
-                            }
-                        ],
-                        direction: 'ltr',
-                        type: 'root',
-                        version: 1,
-                    }
-                }
-            }
+                title: item.title,
+                slug: item.slug,
+                description: item.description,
+                short_description: 'short_description' in item ? item.short_description : item.description,
+                image: featuredMediaId,
+                gallery: galleryIds as any,
+                tags: item.tags,
+                location: item.location,
+                content: item.content as any || null
+            } as any
         })
+        console.log(`Created experience: ${exp.title}`)
     }
   }
 

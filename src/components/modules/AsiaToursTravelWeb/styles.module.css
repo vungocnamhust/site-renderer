@@ -7270,7 +7270,7 @@ footer {
     bottom: 20px;
     width: 100%; } }
 .bg-travel-guide {
-  background-image: url("/images/asiatours/background/bg-travel-guide.jpg");
+  background-image: url("https://d2lwt6tidfiof0.cloudfront.net/uploads/photo-e/Asia-background/bg-travel-guide.jpg");
   height: 100%;
   -webkit-filter: brightness(60%);
   filter: brightness(60%); }

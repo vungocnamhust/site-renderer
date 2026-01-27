@@ -45,6 +45,16 @@ export const TourCategories: CollectionConfig = {
       },
     },
     {
+      name: 'faqs',
+      type: 'relationship',
+      relationTo: 'faqs',
+      hasMany: true,
+      label: 'Curated FAQs',
+      admin: {
+        description: 'Select specific FAQs to display on this category page.',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
       label: 'Description',

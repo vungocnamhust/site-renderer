@@ -79,7 +79,7 @@ export function ExperienceDetail({ experience, relatedTours }: ExperienceDetailP
     <>
       <section className="experience-dt-container opacity-background" style={{ backgroundImage: "url('https://d2lwt6tidfiof0.cloudfront.net/images/icon/icon-experience.svg')" }}>
         <article className="wrap-mini-intro">
-          <div className="desti">{experience.location || 'Vietnam'}, {experience.country ? experience.country.charAt(0).toUpperCase() + experience.country.slice(1) : ''}</div>
+          <div className="desti">{experience.location || 'Vietnam'}, {typeof experience.country === 'object' && experience.country?.name ? experience.country.name : ''}</div>
           <h1 className="title-h2">{experience.title}</h1>
           
           {experience.tags && experience.tags.length > 0 && (
