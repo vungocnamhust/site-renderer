@@ -38,69 +38,71 @@ export async function AsiaToursTravelWeb({ data, slug = [] }: ModuleProps) {
   }
   // 3. Country Experiences: /vietnam/experiences
   else if (slug.length === 2 && slug[1] === 'experiences') {
-      const country = slug[0]
-      content = <CountryExperiencesPage data={data} countrySlug={country} />
+    const country = slug[0]
+    content = <CountryExperiencesPage data={data} countrySlug={country} />
   }
   // 4. Experience Detail: /experiences/[slug]
   else if (slug.length === 2 && slug[0] === 'experiences') {
-      const experienceSlug = slug[1]
-      content = <ExperienceDetailPage data={data} slug={experienceSlug} />
+    const experienceSlug = slug[1]
+    content = <ExperienceDetailPage data={data} slug={experienceSlug} />
   }
   // 5. Multi-Country Tours, Tour Detail OR Tour Category (via /tours/[slug])
   else if (slug[0] === 'tours' && slug.length === 2) {
     const secondSlug = slug[1]
-    
+
     // Check if it's a known multi-country slug
     const isMultiCountry = ['thailand-vietnam', 'vietnam-cambodia', 'vietnam-cambodia-laos', 'multi-country'].includes(secondSlug)
-    
+
     if (isMultiCountry) {
-        content = <MultiCountryToursPage data={data} slug={secondSlug} />
+      content = <MultiCountryToursPage data={data} slug={secondSlug} />
     } else {
-        // Dynamic Routing: Check if it's a Tour or a Category
-        // We need to resolve this on the server side to decide which component to render
-        try {
-             // Parallel fetch attempt (optimization) is hard because we need to know WHICH one it is to pick component.
-             // But we can do it sequentially or leverage Payload local API.
-             // Local API is fast.
-             const payload = await getPayload({ config: configPromise })
-             
-             // 1. Check if it's a TOUR
-             const tourResult = await payload.find({
-                 collection: 'tours',
-                 where: { slug: { equals: secondSlug } },
-                 limit: 1,
-                 depth: 0 // Minimal depth just to check existence
-             })
+      // Dynamic Routing: Check if it's a Tour or a Category
+      // We need to resolve this on the server side to decide which component to render
+      try {
+        // Parallel fetch attempt (optimization) is hard because we need to know WHICH one it is to pick component.
+        // But we can do it sequentially or leverage Payload local API.
+        // Local API is fast.
+        //  const payload = await getPayload({ config: configPromise })
 
-             if (tourResult.docs.length > 0) {
-                 content = <TourDetailPage data={data} tourSlug={secondSlug} />
-             } else {
-                 // 2. Check if it's a CATEGORY
-                 const catResult = await payload.find({
-                     collection: 'tour-categories',
-                     where: { slug: { equals: secondSlug } },
-                     limit: 1,
-                     depth: 0
-                 })
+        //  // 1. Check if it's a TOUR
+        //  const tourResult = await payload.find({
+        //      collection: 'tours',
+        //      where: { slug: { equals: secondSlug } },
+        //      limit: 1,
+        //      depth: 0 // Minimal depth just to check existence
+        //  })
 
-                 if (catResult.docs.length > 0) {
-                     content = <TourCategoryPage data={data} categorySlug={secondSlug} />
-                 } else {
-                     // 3. Fallback: Show Tour 404 (TourDetailPage has handled 404 UI)
-                     content = <TourDetailPage data={data} tourSlug={secondSlug} />
-                 }
-             }
+        //  if (tourResult.docs.length > 0) {
+        //      content = <TourDetailPage data={data} tourSlug={secondSlug} />
+        //  } else {
+        //      // 2. Check if it's a CATEGORY
+        //      const catResult = await payload.find({
+        //          collection: 'tour-categories',
+        //          where: { slug: { equals: secondSlug } },
+        //          limit: 1,
+        //          depth: 0
+        //      })
 
-        } catch (e) {
-            console.error('[AsiaToursTravelWeb] Error resolving /tours/ route:', e);
-            content = <TourDetailPage data={data} tourSlug={secondSlug} />
-        }
+        //      if (catResult.docs.length > 0) {
+        //          content = <TourCategoryPage data={data} categorySlug={secondSlug} />
+        //      } else {
+        //          // 3. Fallback: Show Tour 404 (TourDetailPage has handled 404 UI)
+        //          content = <TourDetailPage data={data} tourSlug={secondSlug} />
+        //      }
+        //  }
+        content = <TourCategoryPage data={data} categorySlug={slug[1]} />
+
+
+      } catch (e) {
+        console.error('[AsiaToursTravelWeb] Error resolving /tours/ route:', e);
+        content = <TourDetailPage data={data} tourSlug={secondSlug} />
+      }
     }
   }
   // 6. Blog Posts: /blog/post-slug - FETCH FULL BLOG DATA
   else if (slug[0] === 'blog' && slug.length === 2) {
     const blogSlug = slug[1]
-    
+
     // Fetch full blog document with content field from Payload API
     let fetchedBlog: Blog | undefined
     try {
@@ -117,17 +119,17 @@ export async function AsiaToursTravelWeb({ data, slug = [] }: ModuleProps) {
     } catch (error) {
       console.error('[AsiaToursTravelWeb] Error fetching blog:', error)
     }
-    
+
     content = <BlogPostPage data={data} blogSlug={blogSlug} blog={fetchedBlog} />
   }
   // 7. Travel Guide: /travel-guide
-  else if (slug[0] === 'blog') {
+  else if (slug[0] === 'travel-guide') {
     content = <TravelGuidePage data={data} searchParams={{ tab: 'overview' }} /> // Default, will be hydrated on client or passed if we change sig
   }
   // 8. Travel Themes: /travel-themes/[slug]
   else if (slug[0] === 'travel-themes' && slug.length === 2) {
-      // Use TourCategoryPage for travel themes
-      content = <TourCategoryPage data={data} categorySlug={slug[1]} />
+    // Use TourCategoryPage for travel themes
+    content = <TourCategoryPage data={data} categorySlug={slug[1]} />
   }
   // 7. Category Page: /category-slug (single segment)
   else if (slug.length === 1) {

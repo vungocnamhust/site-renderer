@@ -159,20 +159,35 @@ export async function getExperiencesByCountry(countrySlug: string, destination?:
     
     const countryId = countries[0].id
     
-    const query: any = {
-        country: { equals: countryId }
-    }
-
-    if (destination && destination !== 'All') {
-        query.location = { equals: destination }
-    }
-
+    // Fetch ALL experiences for this country
+    // We filter in memory to allow flexible matching of "Location" string OR "Destination" relationship name
     const { docs } = await payload.find({
         collection: 'experiences',
-        where: query,
-        limit: 100
+        where: {
+            country: { equals: countryId }
+        },
+        limit: 300, // Fetch enough to cover country
+        depth: 1 // Ensure relationships are populated
     })
-    return docs as unknown as Experience[]
+
+    const allExperiences = docs as unknown as Experience[]
+
+    if (destination && destination !== 'All' && destination !== '') {
+        const decodedDest = decodeURIComponent(destination)
+        return allExperiences.filter(exp => {
+            // Check rigid string field
+            if (exp.location === decodedDest) return true;
+            
+            // Check relationship field
+            if (typeof exp.destination === 'object' && exp.destination !== null) {
+                if (exp.destination.name === decodedDest) return true;
+            }
+            
+            return false;
+        })
+    }
+
+    return allExperiences
 }
 
 /**

@@ -78,6 +78,12 @@ export interface BestSupportItem {
   description?: string
 }
 
+export interface SignatureItem {
+  icon: PayloadMedia | string
+}
+
+
+
 export interface TourStyleItem {
   title: string
   image: PayloadMedia | string
@@ -129,6 +135,7 @@ export interface AsiaToursTravelWebData {
   featuredTours?: (PayloadTour | string)[] // Relationship can be ID or Object
   featuredBlogs?: (PayloadBlog | string)[]
   bestSupport?: BestSupportItem[]
+  signature?: SignatureItem
   tourStyles?: TourStyleItem[]
   uniqueExperiences?: UniqueExperienceItem[]
   faqs?: FaqItem[]
