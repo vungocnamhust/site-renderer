@@ -11,9 +11,9 @@ export function TourCard({ tour }: TourCardProps) {
   const firstCountry = countries.length > 0 && typeof countries[0] === 'object' ? countries[0] : null;
   const countrySlug = firstCountry?.slug || 'vietnam';
   const countryName = firstCountry?.name || 'Asia';
-  
+
   // Construct URL
-  const href = countrySlug 
+  const href = countrySlug
     ? `/${countrySlug}/tours/${tour.slug}`
     : `/tours/${tour.slug}`
 
@@ -43,13 +43,13 @@ export function TourCard({ tour }: TourCardProps) {
       <div className="count-day">
         {countryName}
       </div>
-      
+
       {/* Tooltip wrapper (Simplified for now) */}
       <div className="wrap-tooltip">
         <a href="#" title="Cultural" className="tooltip"><i className="icon-font icon-cultural"></i><span>cultural<i></i></span></a>
         <a href="#" title="Heritage" className="tooltip"><i className="icon-font icon-heritage"></i><span>heritage<i></i></span></a>
       </div>
-      
+
       <Link className="btn-st2" href={href}>explore this trip</Link>
     </article>
   )
