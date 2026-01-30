@@ -76,9 +76,11 @@ export interface Config {
     experiences: Experience;
     countries: Country;
     destinations: Destination;
+    districts: District;
     tags: Tag;
     faqs: Faq;
     'service-types': ServiceType;
+    services: Service;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -95,9 +97,11 @@ export interface Config {
     experiences: ExperiencesSelect<false> | ExperiencesSelect<true>;
     countries: CountriesSelect<false> | CountriesSelect<true>;
     destinations: DestinationsSelect<false> | DestinationsSelect<true>;
+    districts: DistrictsSelect<false> | DistrictsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'service-types': ServiceTypesSelect<false> | ServiceTypesSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -462,11 +466,11 @@ export interface Tour {
    */
   shortDescription?: string | null;
   /**
-   * This list is automatically populated and calculated based on the Detailed Itinerary
+   * This list is automatically populated and calculated based on the districts of the services used in the itinerary.
    */
   destinations?:
     | {
-        destination: number | Destination;
+        destination: number | District;
         image?: (number | null) | Media;
         duration_days?: number | null;
         id?: string | null;
@@ -539,9 +543,9 @@ export interface Tour {
     | {
         day: string;
         /**
-         * Chọn điểm đến cụ thể để hệ thống tự động tổng hợp danh sách Destinations
+         * Danh sách các districts tồn tại trong danh sách dịch vụ của ngày này
          */
-        location: number | Destination;
+        districts?: (number | District)[] | null;
         content: {
           root: {
             type: string;
@@ -559,16 +563,17 @@ export interface Tour {
         };
         services?:
           | {
-              serviceType: number | ServiceType;
+              /**
+               * Chọn dịch vụ từ thư viện hoặc tạo mới
+               */
+              service: number | Service;
+              /**
+               * Ghi chú riêng cho ngày này (nếu có)
+               */
               description?: string | null;
               id?: string | null;
             }[]
           | null;
-        meals?: ('Breakfast' | 'Lunch' | 'Dinner')[] | null;
-        /**
-         * Sử dụng Services breakdown cho thông tin Hotel mới
-         */
-        accommodation?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -725,40 +730,19 @@ export interface Tour {
   createdAt: string;
 }
 /**
- * Quản lý điểm đến (Cities, Provinces)
+ * Quản lý Quận/Huyện (Districts)
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "destinations".
+ * via the `definition` "districts".
  */
-export interface Destination {
+export interface District {
   id: number;
   name: string;
   /**
-   * URL slug (e.g. ha-long-bay)
+   * URL-friendly slug (e.g. hoan-kiem)
    */
   slug: string;
   country: number | Country;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  featuredImage?: (number | null) | Media;
-  /**
-   * @minItems 2
-   * @maxItems 2
-   */
-  geo?: [number, number] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -841,6 +825,48 @@ export interface Faq {
   createdAt: string;
 }
 /**
+ * Quản lý điểm đến (Cities, Provinces)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "destinations".
+ */
+export interface Destination {
+  id: number;
+  name: string;
+  /**
+   * URL slug (e.g. ha-long-bay)
+   */
+  slug: string;
+  country: number | Country;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  featuredImage?: (number | null) | Media;
+  /**
+   * Các Quận/Huyện thuộc điểm đến này
+   */
+  districts?: (number | District)[] | null;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  geo?: [number, number] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tags".
  */
@@ -878,6 +904,64 @@ export interface TourCategory {
    * Short description for SEO and page header
    */
   description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Danh mục các dịch vụ tiêu chuẩn theo schema hệ thống
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  serviceCode: string;
+  status?: ('draft' | 'published' | 'inactive') | null;
+  /**
+   * e.g. Water Puppet Show Ticket (standard)
+   */
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  type: number | ServiceType;
+  destination?: (number | null) | Destination;
+  district?: (number | null) | District;
+  relatedExperiences?: (number | Experience)[] | null;
+  relatedBlogs?: (number | Blog)[] | null;
+  unit?: string | null;
+  leadTime?: string | null;
+  /**
+   * e.g. Non-refundable after booking
+   */
+  cancellationPolicy?: string | null;
+  notes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1103,6 +1187,10 @@ export interface PayloadLockedDocument {
         value: number | Destination;
       } | null)
     | ({
+        relationTo: 'districts';
+        value: number | District;
+      } | null)
+    | ({
         relationTo: 'tags';
         value: number | Tag;
       } | null)
@@ -1113,6 +1201,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'service-types';
         value: number | ServiceType;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1442,17 +1534,15 @@ export interface ToursSelect<T extends boolean = true> {
     | T
     | {
         day?: T;
-        location?: T;
+        districts?: T;
         content?: T;
         services?:
           | T
           | {
-              serviceType?: T;
+              service?: T;
               description?: T;
               id?: T;
             };
-        meals?: T;
-        accommodation?: T;
         id?: T;
       };
   includes?: T;
@@ -1616,7 +1706,19 @@ export interface DestinationsSelect<T extends boolean = true> {
   country?: T;
   description?: T;
   featuredImage?: T;
+  districts?: T;
   geo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "districts_select".
+ */
+export interface DistrictsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  country?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1658,6 +1760,27 @@ export interface ServiceTypesSelect<T extends boolean = true> {
   name?: T;
   defaultUnit?: T;
   isActive?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  serviceCode?: T;
+  status?: T;
+  title?: T;
+  description?: T;
+  type?: T;
+  destination?: T;
+  district?: T;
+  relatedExperiences?: T;
+  relatedBlogs?: T;
+  unit?: T;
+  leadTime?: T;
+  cancellationPolicy?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;

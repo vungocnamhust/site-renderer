@@ -77,16 +77,16 @@ export const Tours: CollectionConfig = {
     {
         name: 'destinations',
         type: 'array',
-        label: 'Destinations List (Auto-calculated)',
+        label: 'Districts List (Auto-calculated)',
         admin: {
             readOnly: true,
-            description: 'This list is automatically populated and calculated based on the Detailed Itinerary'
+            description: 'This list is automatically populated and calculated based on the districts of the services used in the itinerary.'
         },
         fields: [
             {
                 name: 'destination',
                 type: 'relationship',
-                relationTo: 'destinations',
+                relationTo: 'districts',
                 required: true,
             },
             {
@@ -255,13 +255,14 @@ export const Tours: CollectionConfig = {
           }
         },
         {
-            name: 'location',
-            label: 'Location/Destination (Specific)',
+            name: 'districts',
+            label: 'Location/Districts (Auto-generated)',
             type: 'relationship',
-            relationTo: 'destinations',
-            required: true,
+            relationTo: 'districts',
+            hasMany: true,
             admin: {
-                description: 'Chọn điểm đến cụ thể để hệ thống tự động tổng hợp danh sách Destinations'
+                readOnly: true,
+                description: 'Danh sách các districts tồn tại trong danh sách dịch vụ của ngày này'
             }
         },
         {
@@ -276,34 +277,20 @@ export const Tours: CollectionConfig = {
             type: 'array',
             fields: [
                {
-                  name: 'serviceType',
+                  name: 'service',
+                  label: 'Select Service',
                   type: 'relationship',
-                  relationTo: 'service-types',
+                  relationTo: 'services',
                   required: true,
-                  admin: { width: '40%' }
+                  admin: { width: '40%', description: 'Chọn dịch vụ từ thư viện hoặc tạo mới' }
                },
                {
                   name: 'description',
                   type: 'text',
-                  label: 'Short Note / Inclusions',
-                  admin: { width: '60%' }
+                  label: 'Override Note / Inclusions',
+                  admin: { width: '60%', description: 'Ghi chú riêng cho ngày này (nếu có)' }
                }
             ]
-        },
-        {
-          name: 'meals',
-          label: 'Meals',
-          type: 'select',
-          hasMany: true,
-          options: ['Breakfast', 'Lunch', 'Dinner'],
-        },
-        {
-            name: 'accommodation',
-            label: 'Accommodation Note (Legacy)',
-            type: 'text',
-            admin: {
-                description: 'Sử dụng Services breakdown cho thông tin Hotel mới'
-            }
         }
       ]
     },
@@ -431,7 +418,6 @@ export const Tours: CollectionConfig = {
                     {
                         name: 'content',
                         type: 'richText',
-                        label: 'Team Description'
                     }
                 ]
             },
@@ -528,39 +514,77 @@ export const Tours: CollectionConfig = {
         }
 
         // --- AUTO-EXTRACT DESTINATIONS & DURATION FROM ITINERARY ---
-        if (data.itinerary && Array.isArray(data.itinerary)) {
-            const destMap = new Map<string, number>(); // ID -> days count
-            const uniqueOrder: string[] = [];
+        if (data.itinerary !== undefined) {
+            if (Array.isArray(data.itinerary) && data.itinerary.length > 0) {
+                // 1. Collect all service IDs
+                const allServiceIds = new Set<string>();
+                data.itinerary.forEach((day: any) => {
+                  if (day.services && Array.isArray(day.services)) {
+                    day.services.forEach((s: any) => {
+                      const id = typeof s.service === 'object' ? s.service?.id : s.service;
+                      if (id) allServiceIds.add(id);
+                    });
+                  }
+                });
 
-            data.itinerary.forEach((day: any) => {
-                const locId = typeof day.location === 'object' ? day.location?.id : day.location;
-                if (locId) {
-                    if (!destMap.has(locId)) {
-                        destMap.set(locId, 1);
-                        uniqueOrder.push(locId);
-                    } else {
-                        destMap.set(locId, (destMap.get(locId) || 0) + 1);
-                    }
+                // 2. Fetch services to get their districts
+                let serviceMap = new Map<string, string>(); // Service ID -> District ID
+                if (allServiceIds.size > 0) {
+                  const servicesDocs = await req.payload.find({
+                    collection: 'services',
+                    where: { id: { in: Array.from(allServiceIds) } },
+                    limit: 0,
+                    pagination: false,
+                  });
+                  servicesDocs.docs.forEach((s: any) => {
+                    const distId = typeof s.district === 'object' ? s.district?.id : s.district;
+                    if (distId) serviceMap.set(s.id, distId);
+                  });
                 }
-            });
 
-            // Update top-level destinations array
-            data.destinations = uniqueOrder.map(id => ({
-                destination: id,
-                duration_days: destMap.get(id)
-            }));
+                // 3. Process each day to set its districts
+                const distCountMap = new Map<string, number>(); // District ID -> days count
+                const uniqueOrder: string[] = [];
 
-            // CALCULATE DURATION
-            const totalDays = data.itinerary.length;
-            if (totalDays > 0) {
-               const totalNights = totalDays > 1 ? totalDays - 1 : 0;
-               data.duration = `${totalDays} Days / ${totalNights} Night${totalNights !== 1 ? 's' : ''}`;
+                data.itinerary.forEach((day: any) => {
+                  const dayDistricts = new Set<string>();
+                  if (day.services && Array.isArray(day.services)) {
+                    day.services.forEach((s: any) => {
+                      const id = typeof s.service === 'object' ? s.service?.id : s.service;
+                      const distId = serviceMap.get(id);
+                      if (distId) dayDistricts.add(distId);
+                    });
+                  }
+                  
+                  // Set auto-generated districts for the day
+                  day.districts = Array.from(dayDistricts);
+
+                  // Update overall tour districts
+                  dayDistricts.forEach(distId => {
+                    if (!distCountMap.has(distId)) {
+                        distCountMap.set(distId, 1);
+                        uniqueOrder.push(distId);
+                    } else {
+                        distCountMap.set(distId, (distCountMap.get(distId) || 0) + 1);
+                    }
+                  });
+                });
+
+                // 4. Update top-level destinations (Districts)
+                data.destinations = uniqueOrder.map(id => ({
+                    destination: id,
+                    duration_days: distCountMap.get(id)
+                }));
+
+                // 5. Calculate Duration
+                const totalDays = data.itinerary.length;
+                const totalNights = totalDays > 1 ? totalDays - 1 : 0;
+                data.duration = `${totalDays} Days / ${totalNights} Night${totalNights !== 1 ? 's' : ''}`;
             } else {
-               data.duration = '';
+                // Itinerary was cleared or is empty
+                data.destinations = [];
+                data.duration = '';
             }
-        } else {
-            data.destinations = [];
-            data.duration = '';
         }
 
         // --- INTELLIGENT ROUTE & TYPE GENERATION SCRIPT ---

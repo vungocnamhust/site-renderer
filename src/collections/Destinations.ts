@@ -61,6 +61,16 @@ export const Destinations: CollectionConfig = {
       label: 'Featured Image',
     },
     {
+      name: 'districts',
+      type: 'relationship',
+      relationTo: 'districts',
+      hasMany: true,
+      label: 'Districts in this Destination',
+      admin: {
+          description: 'Các Quận/Huyện thuộc điểm đến này'
+      }
+    },
+    {
       name: 'geo',
       type: 'point',
       label: 'Geolocation (Lat, Lng)',
