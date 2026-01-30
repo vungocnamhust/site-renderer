@@ -139,9 +139,9 @@ const seedInclusions = async () => {
                             version: 1,
                             direction: 'ltr',
                             children: [{ 
-                                type: 'paragraph',
+                                type: 'paragraph', indent: 0, format: '',
                                 version: 1,
-                                children: [{ text: exp.description, version: 1 }] 
+                                children: [{ type: "text", text: exp.description, version: 1 }] 
                             }] 
                         } 
                     }
@@ -317,15 +317,15 @@ const seedInclusions = async () => {
                          version: 1,
                          direction: 'ltr',
                          children: [
-                              { type: 'heading', tag: 'h3', version: 1, children: [{ text: 'Transport:', version: 1 }] },
-                              { type: 'paragraph', version: 1, children: [{ text: 'Car, Walking, Cruise', version: 1 }] },
-                              { type: 'heading', tag: 'h3', version: 1, children: [{ text: 'Flight: 3 FLIGHTS', version: 1 }] },
-                              { type: 'list', tag: 'ol', listType: 'number', version: 1, children: [
-                                  { type: 'listitem', version: 1, children: [{ text: 'Fly from Hanoi to Danang (1 hour 20 minutes)', version: 1 }] },
-                                  { type: 'listitem', version: 1, children: [{ text: 'Flight from Danang to Ho Chi Minh (1 hour 30 minutes)', version: 1 }] },
-                                  { type: 'listitem', version: 1, children: [{ text: 'Flight from Ho Chi Minh to Nha Trang (1 hour)', version: 1 }] }
+                              { type: 'heading', indent: 0, format: '', tag: 'h3', version: 1, children: [{ type: 'text', text: 'Transport:', version: 1 }] },
+                              { type: 'paragraph', indent: 0, format: '', version: 1, children: [{ type: 'text', text: 'Car, Walking, Cruise', version: 1 }] },
+                              { type: 'heading', indent: 0, format: '', tag: 'h3', version: 1, children: [{ type: 'text', text: 'Flight: 3 FLIGHTS', version: 1 }] },
+                              { type: 'list', indent: 0, format: '', tag: 'ol', listType: 'number', version: 1, children: [
+                                  { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: 'text', text: 'Fly from Hanoi to Danang (1 hour 20 minutes)', version: 1 }] },
+                                  { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: 'text', text: 'Flight from Danang to Ho Chi Minh (1 hour 30 minutes)', version: 1 }] },
+                                  { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: 'text', text: 'Flight from Ho Chi Minh to Nha Trang (1 hour)', version: 1 }] }
                               ]},
-                              { type: 'paragraph', version: 1, children: [{ text: '*Note: Airfares are valid at the time of quotation and subject to change...', version: 1 }] }
+                              { type: 'paragraph', indent: 0, format: '', version: 1, children: [{ type: 'text', text: '*Note: Airfares are valid at the time of quotation and subject to change...', version: 1 }] }
                          ]
                      }
                  }
@@ -339,8 +339,8 @@ const seedInclusions = async () => {
                          version: 1, 
                          direction: 'ltr',
                          children: [
-                             { type: 'heading', tag: 'h3', version: 1, children: [{ text: 'Team: Private Guide, Driver and Trip Managing Experts', version: 1 }] },
-                             { type: 'paragraph', version: 1, children: [{ text: 'Travelling with us means having a dedicated, friendly & professional team by your side...', version: 1 }] }
+                             { type: 'heading', indent: 0, format: '', tag: 'h3', version: 1, children: [{ type: "text", text: 'Team: Private Guide, Driver and Trip Managing Experts', version: 1 }] },
+                             { type: 'paragraph', indent: 0, format: '', version: 1, children: [{ type: "text", text: 'Travelling with us means having a dedicated, friendly & professional team by your side...', version: 1 }] }
                          ]
                      }
                  }
@@ -354,9 +354,9 @@ const seedInclusions = async () => {
                          version: 1,
                          direction: 'ltr',
                          children: [
-                             { type: 'heading', tag: 'h3', version: 1, children: [{ text: 'Meals: 21 Meals', version: 1 }] },
-                             { type: 'paragraph', version: 1, children: [{ text: '13 Breakfasts, 6 Lunches, 2 Dinners', version: 1 }] },
-                             { type: 'paragraph', version: 1, children: [{ text: '(*)Our itinerary takes you on the traditional restaurants...', version: 1 }] }
+                             { type: 'heading', indent: 0, format: '', tag: 'h3', version: 1, children: [{ type: "text", text: 'Meals: 21 Meals', version: 1 }] },
+                             { type: 'paragraph', indent: 0, format: '', version: 1, children: [{ type: "text", text: '13 Breakfasts, 6 Lunches, 2 Dinners', version: 1 }] },
+                             { type: 'paragraph', indent: 0, format: '', version: 1, children: [{ type: "text", text: '(*)Our itinerary takes you on the traditional restaurants...', version: 1 }] }
                          ]
                     }
                  }
@@ -370,12 +370,12 @@ const seedInclusions = async () => {
                          version: 1,
                          direction: 'ltr',
                          children: [
-                             { type: 'heading', tag: 'h3', version: 1, children: [{ text: 'Services', version: 1 }] },
-                             { type: 'list', tag: 'ul', listType: 'bullet', version: 1, children: [
-                                 { type: 'listitem', version: 1, children: [{ text: 'Entrance fees, excursions, visa, water...', version: 1 }] },
-                                 { type: 'listitem', version: 1, children: [{ text: 'Accommodation with daily breakfast', version: 1 }] },
-                                 { type: 'listitem', version: 1, children: [{ text: 'Private car or shared vehicle...', version: 1 }] },
-                                 { type: 'listitem', version: 1, children: [{ text: 'Airport transfers by private car', version: 1 }] }
+                             { type: 'heading', indent: 0, format: '', tag: 'h3', version: 1, children: [{ type: "text", text: 'Services', version: 1 }] },
+                             { type: 'list', indent: 0, format: '', tag: 'ul', listType: 'bullet', version: 1, children: [
+                                 { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: "text", text: 'Entrance fees, excursions, visa, water...', version: 1 }] },
+                                 { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: "text", text: 'Accommodation with daily breakfast', version: 1 }] },
+                                 { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: "text", text: 'Private car or shared vehicle...', version: 1 }] },
+                                 { type: 'listitem', indent: 0, format: '', version: 1, children: [{ type: "text", text: 'Airport transfers by private car', version: 1 }] }
                              ]}
                          ]
                      }

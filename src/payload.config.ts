@@ -17,6 +17,7 @@ import { TourCategories } from './collections/TourCategories'
 import { Countries } from './collections/Countries'
 import { Destinations } from './collections/Destinations'
 import { FAQs } from './collections/FAQs'
+import { ServiceTypes } from './collections/ServiceTypes'
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -42,7 +43,7 @@ export default buildConfig({
   },
   cors: '*',
   csrf: [], // Disable CSRF for easier local dev or configure properly later
-  collections: [Users, Media, Tenants, Tours, TourCategories, Blogs, Experiences, Countries, Destinations, Tags, FAQs],
+  collections: [Users, Media, Tenants, Tours, TourCategories, Blogs, Experiences, Countries, Destinations, Tags, FAQs, ServiceTypes],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

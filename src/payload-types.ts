@@ -78,6 +78,7 @@ export interface Config {
     destinations: Destination;
     tags: Tag;
     faqs: Faq;
+    'service-types': ServiceType;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +97,7 @@ export interface Config {
     destinations: DestinationsSelect<false> | DestinationsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
+    'service-types': ServiceTypesSelect<false> | ServiceTypesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -440,6 +442,10 @@ export interface Tenant {
 export interface Tour {
   id: number;
   /**
+   * Ảnh đại diện chính cho tour (khuyến nghị: 800x600)
+   */
+  featuredImage?: (number | null) | Media;
+  /**
    * Tên tour (VD: "Vietnam Discovery 12 Days")
    */
   title: string;
@@ -451,6 +457,13 @@ export interface Tour {
    * VD: "Private & Tailored Tour"
    */
   subtitle?: string | null;
+  /**
+   * Mô tả ngắn hiển thị trong tour card (max 200 ký tự)
+   */
+  shortDescription?: string | null;
+  /**
+   * This list is automatically populated and calculated based on the Detailed Itinerary
+   */
   destinations?:
     | {
         destination: number | Destination;
@@ -481,7 +494,7 @@ export interface Tour {
    */
   tags?: (number | Tag)[] | null;
   /**
-   * VD: "12 Days / 11 Nights"
+   * Tự động tính từ Lịch trình chi tiết
    */
   duration?: string | null;
   /**
@@ -502,35 +515,33 @@ export interface Tour {
       }[]
     | null;
   /**
-   * Ảnh đại diện cho tour (khuyến nghị: 800x600)
+   * Mô tả ngắn gọn các điểm nổi bật (Sử dụng Bullet List cho tiện lợi)
    */
-  featuredImage?: (number | null) | Media;
-  gallery?:
-    | {
-        image: number | Media;
-        caption?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Mô tả ngắn hiển thị trong tour card (max 200 ký tự)
-   */
-  shortDescription?: string | null;
-  /**
-   * Điểm nổi bật của tour
-   */
-  highlights?:
-    | {
-        text: string;
-        id?: string | null;
-      }[]
-    | null;
+  highlights?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * Lịch trình chi tiết từng ngày (Accordion View)
    */
   itinerary?:
     | {
         day: string;
+        /**
+         * Chọn điểm đến cụ thể để hệ thống tự động tổng hợp danh sách Destinations
+         */
+        location: number | Destination;
         content: {
           root: {
             type: string;
@@ -546,23 +557,57 @@ export interface Tour {
           };
           [k: string]: unknown;
         };
+        services?:
+          | {
+              serviceType: number | ServiceType;
+              description?: string | null;
+              id?: string | null;
+            }[]
+          | null;
         meals?: ('Breakfast' | 'Lunch' | 'Dinner')[] | null;
+        /**
+         * Sử dụng Services breakdown cho thông tin Hotel mới
+         */
         accommodation?: string | null;
         id?: string | null;
       }[]
     | null;
-  includes?:
-    | {
-        item: string;
-        id?: string | null;
-      }[]
-    | null;
-  excludes?:
-    | {
-        item: string;
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Liệt kê các dịch vụ đã bao gồm trong tour (dạng rich text)
+   */
+  includes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Liệt kê các dịch vụ không bao gồm trong tour (dạng rich text)
+   */
+  excludes?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   specs_accommodation?: {
     items?:
       | {
@@ -657,6 +702,13 @@ export interface Tour {
       [k: string]: unknown;
     } | null;
   };
+  gallery?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
    * Tour thuộc tenant nào
    */
@@ -826,6 +878,26 @@ export interface TourCategory {
    * Short description for SEO and page header
    */
   description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-types".
+ */
+export interface ServiceType {
+  id: number;
+  /**
+   * e.g. TRF, GUI, HTL
+   */
+  code: string;
+  name: string;
+  /**
+   * e.g. per vehicle, per day
+   */
+  defaultUnit?: string | null;
+  isActive?: boolean | null;
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1037,6 +1109,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'faqs';
         value: number | Faq;
+      } | null)
+    | ({
+        relationTo: 'service-types';
+        value: number | ServiceType;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1330,9 +1406,11 @@ export interface TenantsSelect<T extends boolean = true> {
  * via the `definition` "tours_select".
  */
 export interface ToursSelect<T extends boolean = true> {
+  featuredImage?: T;
   title?: T;
   slug?: T;
   subtitle?: T;
+  shortDescription?: T;
   destinations?:
     | T
     | {
@@ -1359,42 +1437,26 @@ export interface ToursSelect<T extends boolean = true> {
         description?: T;
         id?: T;
       };
-  featuredImage?: T;
-  gallery?:
-    | T
-    | {
-        image?: T;
-        caption?: T;
-        id?: T;
-      };
-  shortDescription?: T;
-  highlights?:
-    | T
-    | {
-        text?: T;
-        id?: T;
-      };
+  highlights?: T;
   itinerary?:
     | T
     | {
         day?: T;
+        location?: T;
         content?: T;
+        services?:
+          | T
+          | {
+              serviceType?: T;
+              description?: T;
+              id?: T;
+            };
         meals?: T;
         accommodation?: T;
         id?: T;
       };
-  includes?:
-    | T
-    | {
-        item?: T;
-        id?: T;
-      };
-  excludes?:
-    | T
-    | {
-        item?: T;
-        id?: T;
-      };
+  includes?: T;
+  excludes?: T;
   specs_accommodation?:
     | T
     | {
@@ -1441,6 +1503,13 @@ export interface ToursSelect<T extends boolean = true> {
     | T
     | {
         content?: T;
+      };
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
       };
   tenant?: T;
   isActive?: T;
@@ -1577,6 +1646,19 @@ export interface FaqsSelect<T extends boolean = true> {
   tour_categories?: T;
   is_general?: T;
   order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-types_select".
+ */
+export interface ServiceTypesSelect<T extends boolean = true> {
+  code?: T;
+  name?: T;
+  defaultUnit?: T;
+  isActive?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

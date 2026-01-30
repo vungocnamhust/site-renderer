@@ -19,6 +19,17 @@ export const Tours: CollectionConfig = {
     read: () => true, // Public read for frontend
   },
   fields: [
+    // === MEDIA (TOP) ===
+    {
+      name: 'featuredImage',
+      label: 'Featured Image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Ảnh đại diện chính cho tour (khuyến nghị: 800x600)',
+      },
+    },
+
     // === BASIC INFO ===
     {
       name: 'title',
@@ -55,26 +66,28 @@ export const Tours: CollectionConfig = {
       }
     },
     {
+      name: 'shortDescription',
+      label: 'Short Description',
+      type: 'textarea',
+      admin: {
+        description: 'Mô tả ngắn hiển thị trong tour card (max 200 ký tự)',
+      },
+    },
+
+    {
         name: 'destinations',
         type: 'array',
-        label: 'Destinations List',
+        label: 'Destinations List (Auto-calculated)',
+        admin: {
+            readOnly: true,
+            description: 'This list is automatically populated and calculated based on the Detailed Itinerary'
+        },
         fields: [
             {
                 name: 'destination',
                 type: 'relationship',
                 relationTo: 'destinations',
                 required: true,
-                filterOptions: ({ data }) => {
-                    if (data?.countries && Array.isArray(data.countries) && data.countries.length > 0) {
-                         const countryIds = data.countries.map((c: any) => (typeof c === 'object' ? c.id : c));
-                         return {
-                             country: {
-                                 in: countryIds
-                             }
-                         }
-                    }
-                    return true
-                }
             },
             {
                 name: 'image',
@@ -171,10 +184,11 @@ export const Tours: CollectionConfig = {
       fields: [
         {
           name: 'duration',
-          label: 'Duration',
+          label: 'Duration (Auto-calculated)',
           type: 'text',
           admin: {
-            description: 'VD: "12 Days / 11 Nights"',
+            readOnly: true,
+            description: 'Tự động tính từ Lịch trình chi tiết',
             width: '50%',
           },
         },
@@ -214,60 +228,13 @@ export const Tours: CollectionConfig = {
       ]
     },
 
-    // === MEDIA ===
-    {
-      name: 'featuredImage',
-      label: 'Featured Image',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        description: 'Ảnh đại diện cho tour (khuyến nghị: 800x600)',
-      },
-    },
-    {
-      name: 'gallery',
-      label: 'Photo Gallery',
-      type: 'array',
-      minRows: 0,
-      maxRows: 20,
-      fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          required: true,
-        },
-        {
-          name: 'caption',
-          type: 'text',
-        },
-      ],
-    },
-
     // === CONTENT ===
-    {
-      name: 'shortDescription',
-      label: 'Short Description',
-      type: 'textarea',
-      admin: {
-        description: 'Mô tả ngắn hiển thị trong tour card (max 200 ký tự)',
-      },
-    },
     {
       name: 'highlights',
       label: 'Tour Highlights',
-      type: 'array',
-      minRows: 0,
-      maxRows: 20,
-      fields: [
-        {
-          name: 'text',
-          type: 'text',
-          required: true,
-        },
-      ],
+      type: 'richText',
       admin: {
-        description: 'Điểm nổi bật của tour',
+        description: 'Mô tả ngắn gọn các điểm nổi bật (Sử dụng Bullet List cho tiện lợi)',
       },
     },
     {
@@ -288,10 +255,40 @@ export const Tours: CollectionConfig = {
           }
         },
         {
+            name: 'location',
+            label: 'Location/Destination (Specific)',
+            type: 'relationship',
+            relationTo: 'destinations',
+            required: true,
+            admin: {
+                description: 'Chọn điểm đến cụ thể để hệ thống tự động tổng hợp danh sách Destinations'
+            }
+        },
+        {
           name: 'content',
           label: 'Activities',
           type: 'richText',
           required: true,
+        },
+        {
+            name: 'services',
+            label: 'Services Breakdown',
+            type: 'array',
+            fields: [
+               {
+                  name: 'serviceType',
+                  type: 'relationship',
+                  relationTo: 'service-types',
+                  required: true,
+                  admin: { width: '40%' }
+               },
+               {
+                  name: 'description',
+                  type: 'text',
+                  label: 'Short Note / Inclusions',
+                  admin: { width: '60%' }
+               }
+            ]
         },
         {
           name: 'meals',
@@ -302,34 +299,29 @@ export const Tours: CollectionConfig = {
         },
         {
             name: 'accommodation',
-            label: 'Accommodation',
+            label: 'Accommodation Note (Legacy)',
             type: 'text',
+            admin: {
+                description: 'Sử dụng Services breakdown cho thông tin Hotel mới'
+            }
         }
       ]
     },
     {
       name: 'includes',
       label: 'What\'s Included',
-      type: 'array',
-      fields: [
-        {
-          name: 'item',
-          type: 'text',
-          required: true,
-        },
-      ],
+      type: 'richText',
+      admin: {
+        description: 'Liệt kê các dịch vụ đã bao gồm trong tour (dạng rich text)',
+      },
     },
     {
       name: 'excludes',
       label: 'What\'s Excluded',
-      type: 'array',
-      fields: [
-        {
-          name: 'item',
-          type: 'text',
-          required: true,
-        },
-      ],
+      type: 'richText',
+      admin: {
+        description: 'Liệt kê các dịch vụ không bao gồm trong tour (dạng rich text)',
+      },
     },
 
     // === DETAILED INCLUSIONS (FOR MODALS) ===
@@ -468,6 +460,27 @@ export const Tours: CollectionConfig = {
         ]
     },
 
+    // === GALLERY (MOVE TO LAST) ===
+    {
+      name: 'gallery',
+      label: 'Photo Gallery',
+      type: 'array',
+      minRows: 0,
+      maxRows: 20,
+      fields: [
+        {
+          name: 'image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'caption',
+          type: 'text',
+        },
+      ],
+    },
+
     // === TENANT RELATIONSHIP ===
     {
       name: 'tenant',
@@ -506,13 +519,6 @@ export const Tours: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, req, operation, originalDoc }) => {
-        console.log('--- DEBUG: Tour beforeChange Hook ---');
-        console.log('Operation:', operation);
-        console.log('Tour ID:', originalDoc?.id || data?.id);
-        console.log('Data Countries (type):', typeof data?.countries, Array.isArray(data?.countries));
-        console.log('Data Countries (value):', JSON.stringify(data?.countries));
-        console.log('OriginalDoc Countries (value):', JSON.stringify(originalDoc?.countries));
-
         // Auto-generate slug from title if not provided
         if (data?.title && !data?.slug) {
           data.slug = data.title
@@ -521,34 +527,59 @@ export const Tours: CollectionConfig = {
             .replace(/^-|-$/g, '')
         }
 
-        // --- INTELLIGENT ROUTE & TYPE GENERATION SCRIPT (FIXED FOR BULK UPDATES) ---
-        // Determine the effective list of countries to process
-        // In an 'update', if data.countries is missing (partial update), we must use originalDoc.countries
-        // If data.countries is present (user changed it), we use data.countries
+        // --- AUTO-EXTRACT DESTINATIONS & DURATION FROM ITINERARY ---
+        if (data.itinerary && Array.isArray(data.itinerary)) {
+            const destMap = new Map<string, number>(); // ID -> days count
+            const uniqueOrder: string[] = [];
+
+            data.itinerary.forEach((day: any) => {
+                const locId = typeof day.location === 'object' ? day.location?.id : day.location;
+                if (locId) {
+                    if (!destMap.has(locId)) {
+                        destMap.set(locId, 1);
+                        uniqueOrder.push(locId);
+                    } else {
+                        destMap.set(locId, (destMap.get(locId) || 0) + 1);
+                    }
+                }
+            });
+
+            // Update top-level destinations array
+            data.destinations = uniqueOrder.map(id => ({
+                destination: id,
+                duration_days: destMap.get(id)
+            }));
+
+            // CALCULATE DURATION
+            const totalDays = data.itinerary.length;
+            if (totalDays > 0) {
+               const totalNights = totalDays > 1 ? totalDays - 1 : 0;
+               data.duration = `${totalDays} Days / ${totalNights} Night${totalNights !== 1 ? 's' : ''}`;
+            } else {
+               data.duration = '';
+            }
+        } else {
+            data.destinations = [];
+            data.duration = '';
+        }
+
+        // --- INTELLIGENT ROUTE & TYPE GENERATION SCRIPT ---
         let effectiveCountries = data?.countries;
-        
         if (operation === 'update' && typeof data?.countries === 'undefined') {
             effectiveCountries = originalDoc?.countries;
         }
 
-        // Only proceed if we have valid countries data
         if (effectiveCountries && Array.isArray(effectiveCountries) && effectiveCountries.length > 0) {
             try {
-                // Fetch country details to get names (ids might be passed)
-                // effectiveCountries can be array of IDs or objects
                 const countryIds = effectiveCountries
                     .map((c: any) => (typeof c === 'object' ? c?.id : c))
-                    .filter((id: any) => typeof id === 'string' || typeof id === 'number'); // Filter out invalid IDs
+                    .filter((id: any) => id);
                 
                 if (countryIds.length > 0) {
-                     // standardOrder to sort names logically
                     const standardOrder = ['vietnam', 'cambodia', 'laos', 'thailand', 'myanmar'];
-                    
                     const countriesDocs = await req.payload.find({
                         collection: 'countries',
-                        where: {
-                            id: { in: countryIds }
-                        },
+                        where: { id: { in: countryIds } },
                         pagination: false
                     });
 
@@ -556,33 +587,36 @@ export const Tours: CollectionConfig = {
                         const sortedDocs = countriesDocs.docs.sort((a: any, b: any) => {
                             const idxA = standardOrder.indexOf(a.slug);
                             const idxB = standardOrder.indexOf(b.slug);
-                            // If not in list (unknown slug), put at end
                             return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
                         });
                         
                         const countryNames = sortedDocs.map((c: any) => c.name);
                         const countrySlugs = sortedDocs.map((c: any) => c.slug);
                         
-                        // Only update these fields if we successfully calculated them
                         data.routeTitle = `${countryNames.join(' ')} Tours`; 
                         data.routeSlug = countrySlugs.join('-');
                         data.tourType = sortedDocs.length > 1 ? 'multi-country' : 'single-country';
+                    } else {
+                        data.routeTitle = '';
+                        data.routeSlug = '';
+                        data.tourType = 'single-country';
                     }
+                } else {
+                    data.routeTitle = '';
+                    data.routeSlug = '';
+                    data.tourType = 'single-country';
                 }
             } catch (error) {
                 console.error('Error generating route info:', error);
-                // Fail gracefully: Do not crash the update, just keep existing values
+                data.routeTitle = '';
+                data.routeSlug = '';
+                data.tourType = 'single-country';
             }
-        } 
-        // Case: User explicitly cleared countries (empty array) -> Set to single-country default or handle as error?
-        // Assuming we default to 'single-country' if no countries found in data, ONLY IF we are sure it's not a partial update that missed it.
-        // If effectiveCountries is explicitly empty array [], it means user removed all countries.
-        else if (Array.isArray(effectiveCountries) && effectiveCountries.length === 0) {
+        } else if (Array.isArray(effectiveCountries) && effectiveCountries.length === 0) {
+             data.routeTitle = '';
+             data.routeSlug = '';
              data.tourType = 'single-country';
         }
-        
-        // If effectiveCountries was undefined (partial update without countries field), we do NOTHING to tourType.
-        // This prevents overwriting existing tourType during unrelated bulk updates.
 
         return data
       },
