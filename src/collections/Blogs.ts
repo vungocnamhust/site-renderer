@@ -173,7 +173,7 @@ export const Blogs: CollectionConfig = {
     },
     {
       name: 'relatedDestinations',
-      label: 'Related Destinations',
+      label: 'Related Destinations / Cities',
       type: 'relationship',
       relationTo: 'destinations',
       hasMany: true,

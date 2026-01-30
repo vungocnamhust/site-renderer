@@ -17,7 +17,10 @@ export const Districts: CollectionConfig = {
       name: 'name',
       type: 'text',
       required: true,
-      label: 'District Name',
+      label: 'District / City Name',
+      admin: {
+        placeholder: 'e.g. Hanoi, Quang Ninh, Ho Chi Minh'
+      }
     },
     {
       name: 'slug',
@@ -25,7 +28,7 @@ export const Districts: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'URL-friendly slug (e.g. hoan-kiem)',
+        description: 'URL-friendly slug (e.g. hanoi)',
       },
       hooks: {
         beforeValidate: [
@@ -39,15 +42,83 @@ export const Districts: CollectionConfig = {
       },
     },
     {
-      name: 'country',
+      type: 'row',
+      fields: [
+        {
+          name: 'latitude',
+          type: 'number',
+          label: 'Latitude',
+          admin: { width: '50%' }
+        },
+        {
+          name: 'longitude',
+          type: 'number',
+          label: 'Longitude',
+          admin: { width: '50%' }
+        }
+      ]
+    },
+    {
+      name: 'destination',
       type: 'relationship',
-      relationTo: 'countries',
+      relationTo: 'destinations',
       required: true,
-      label: 'Country',
+      label: 'Destination (Level 2)',
       admin: {
         position: 'sidebar',
+        description: 'Chọn thành phố/điểm đến lớn quản lý quận này'
       },
     },
+    {
+      name: 'isHub',
+      type: 'checkbox',
+      label: 'Is Logistics Hub?',
+      defaultValue: false,
+      admin: {
+          position: 'sidebar',
+          description: 'Đánh dấu nếu đây là khu vực có trạm trung chuyển lớn'
+      }
+    },
+    {
+        name: 'logistics',
+        type: 'group',
+        label: 'Logistics / Transfer Info',
+        fields: [
+            {
+                type: 'row',
+                fields: [
+                    {
+                        name: 'nearestAirport',
+                        type: 'relationship',
+                        relationTo: 'transit-hubs',
+                        label: 'Nearest Airport',
+                        filterOptions: {
+                            type: { equals: 'airport' }
+                        },
+                        admin: { width: '50%' }
+                    },
+                    {
+                        name: 'nearestTrainStation',
+                        type: 'relationship',
+                        relationTo: 'transit-hubs',
+                        label: 'Nearest Train Station',
+                        filterOptions: {
+                            type: { equals: 'train_station' }
+                        },
+                        admin: { width: '50%' }
+                    }
+                ]
+            },
+            {
+                name: 'transferNotes',
+                type: 'textarea',
+                label: 'Transfer Notes (AI Context)',
+                admin: {
+                    description: 'VD: 45 min from Airport, 10 min from Train station'
+                }
+            }
+        ]
+    }
   ],
 }
 

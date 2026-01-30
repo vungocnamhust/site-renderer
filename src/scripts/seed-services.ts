@@ -20,10 +20,10 @@ async function seedServices() {
   const serviceTypes = stRes.docs
   const findST = (code: string) => serviceTypes.find((t: any) => t.code === code)?.id
 
-  // Get destinations
-  const destRes = await payload.find({ collection: 'destinations', limit: 0 })
-  const destinations = destRes.docs
-  const findDest = (slug: string) => destinations.find((d: any) => d.slug.includes(slug))?.id
+  // Get districts (was destinations)
+  const distRes = await payload.find({ collection: 'districts', limit: 0 })
+  const districts = distRes.docs
+  const findDistrict = (slug: string) => districts.find((d: any) => d.slug.includes(slug))?.id
 
   const sampleServices = [
     { 
@@ -31,36 +31,39 @@ async function seedServices() {
         title: 'Water Puppet Show Ticket (standard)', 
         status: 'draft',
         typeCode: 'TIC',
-        destSlug: 'hanoi',
+        distSlug: 'hoan-kiem', // Assuming district slug
         unit: 'per ticket',
         leadTime: '24h',
-        cancellationPolicy: 'Non-refundable after booking'
+        cancellationPolicy: 'Non-refundable after booking',
+        level: 'economy'
     },
     { 
         serviceCode: 'CT-SRV-TRF-VN-HAN-0001',
         title: 'Airport Transfer (Private Sedan) - Noi Bai', 
         status: 'published',
         typeCode: 'TRF',
-        destSlug: 'hanoi',
+        distSlug: 'soc-son', // Airport district
         unit: 'per vehicle',
         leadTime: '12h',
-        cancellationPolicy: 'Free cancellation up to 24h before arrival'
+        cancellationPolicy: 'Free cancellation up to 24h before arrival',
+        level: 'economy'
     },
     { 
         serviceCode: 'CT-SRV-GUI-VN-HAN-0001',
         title: 'Full Day English Speaking Guide (Hanoi)', 
         status: 'published',
         typeCode: 'GUI',
-        destSlug: 'hanoi',
+        distSlug: 'hoan-kiem',
         unit: 'per day',
         leadTime: '48h',
-        cancellationPolicy: '50% refund if cancelled within 48h'
+        cancellationPolicy: '50% refund if cancelled within 48h',
+        level: 'deluxe'
     }
   ]
 
   for (const s of sampleServices) {
     const stId = findST(s.typeCode)
-    const destId = findDest(s.destSlug)
+    const distId = findDistrict(s.distSlug)
     
     if (!stId) {
         console.log(`Skipping ${s.title}: Service type ${s.typeCode} not found.`);
@@ -78,11 +81,11 @@ async function seedServices() {
         title: s.title,
         status: s.status,
         type: stId,
-        destination: destId,
+        district: distId, // Updated field name
         unit: s.unit,
         leadTime: s.leadTime,
         cancellationPolicy: s.cancellationPolicy,
-        tenant: tenantId,
+        level: s.level, // New field
     };
 
     if (existing.docs.length === 0) {

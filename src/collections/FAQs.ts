@@ -57,7 +57,7 @@ export const FAQs: CollectionConfig = {
       type: 'relationship',
       relationTo: 'destinations',
       hasMany: true,
-      label: 'Related Destinations',
+      label: 'Related Destinations / Cities',
       admin: {
         position: 'sidebar',
       },

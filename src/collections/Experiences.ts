@@ -121,39 +121,48 @@ export const Experiences: CollectionConfig = {
       type: 'row',
       fields: [
           {
-            name: 'location',
-            type: 'text',
-            label: 'Location/City',
+            name: 'latitude',
+            type: 'number',
+            label: 'Latitude (Level 0)',
             admin: { width: '50%' }
           },
           {
-            name: 'country',
-            type: 'relationship',
-            relationTo: 'countries',
+            name: 'longitude',
+            type: 'number',
+            label: 'Longitude (Level 0)',
             admin: { width: '50%' }
           }
       ]
     },
     {
-      name: 'destination',
-      type: 'relationship',
-      relationTo: 'destinations',
-      hasMany: false,
-      label: 'Destination',
-      filterOptions: ({ data }) => {
-          if (data?.country) {
-              const countryId = typeof data.country === 'object' ? data.country.id : data.country;
-              return {
-                  country: {
-                      equals: countryId
-                  }
-              }
+      type: 'row',
+      fields: [
+          {
+            name: 'country',
+            type: 'relationship',
+            relationTo: 'countries',
+            admin: { width: '50%' }
+          },
+          {
+            name: 'destination',
+            type: 'relationship',
+            relationTo: 'destinations',
+            hasMany: false,
+            label: 'Destination / City (Level 2)',
+            filterOptions: ({ data }: any) => {
+                if (data?.country) {
+                    const countryId = typeof data.country === 'object' ? data.country.id : data.country;
+                    return {
+                        country: {
+                            equals: countryId
+                        }
+                    }
+                }
+                return true
+            },
+            admin: { width: '50%' }
           }
-          return true
-      },
-      admin: {
-        position: 'sidebar',
-      }
-    }
+      ]
+    },
   ],
 }

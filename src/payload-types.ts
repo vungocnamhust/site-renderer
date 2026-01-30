@@ -80,6 +80,9 @@ export interface Config {
     tags: Tag;
     faqs: Faq;
     'service-types': ServiceType;
+    'experience-themes': ExperienceTheme;
+    markets: Market;
+    'transit-hubs': TransitHub;
     services: Service;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -101,6 +104,9 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'service-types': ServiceTypesSelect<false> | ServiceTypesSelect<true>;
+    'experience-themes': ExperienceThemesSelect<false> | ExperienceThemesSelect<true>;
+    markets: MarketsSelect<false> | MarketsSelect<true>;
+    'transit-hubs': TransitHubsSelect<false> | TransitHubsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -466,11 +472,11 @@ export interface Tour {
    */
   shortDescription?: string | null;
   /**
-   * This list is automatically populated and calculated based on the districts of the services used in the itinerary.
+   * This list is automatically populated and calculated based on the destinations of the services used in the itinerary.
    */
   destinations?:
     | {
-        destination: number | District;
+        destination: number | Destination;
         image?: (number | null) | Media;
         duration_days?: number | null;
         id?: string | null;
@@ -502,17 +508,21 @@ export interface Tour {
    */
   duration?: string | null;
   /**
-   * Giá khởi điểm
+   * Tự động lấy giá thấp nhất từ Tour Price Tiers
    */
   price?: number | null;
   /**
-   * VD: "From $1,500 per person" hoặc "Price on request"
+   * Tự động tạo từ giá thấp nhất (VD: "From $1,500 per person")
    */
   priceNote?: string | null;
   videoUrl?: string | null;
-  priceOptions?:
+  /**
+   * Định nghĩa các hạng vé cho tour này (VD: Standard, Deluxe). Các hạng này sẽ được dùng để cấu hình dịch vụ trong lịch trình.
+   */
+  tourTiers?:
     | {
-        name?: string | null;
+        code: 'economy' | 'deluxe' | 'luxury';
+        name: string;
         price?: number | null;
         description?: string | null;
         id?: string | null;
@@ -543,9 +553,9 @@ export interface Tour {
     | {
         day: string;
         /**
-         * Danh sách các districts tồn tại trong danh sách dịch vụ của ngày này
+         * Tự động tổng hợp từ các dịch vụ trong ngày
          */
-        districts?: (number | District)[] | null;
+        destinations?: (number | Destination)[] | null;
         content: {
           root: {
             type: string;
@@ -564,13 +574,27 @@ export interface Tour {
         services?:
           | {
               /**
-               * Chọn dịch vụ từ thư viện hoặc tạo mới
+               * Dịch vụ mặc định cho hạng thấp nhất hoặc chuẩn chung
                */
               service: number | Service;
               /**
-               * Ghi chú riêng cho ngày này (nếu có)
+               * Chọn dịch vụ khác cho các hạng vé cao cấp hơn (VD: Luxury dùng khách sạn 5 sao còn Standard dùng 3 sao)
                */
-              description?: string | null;
+              tierOverrides?:
+                | {
+                    tiers: ('economy' | 'deluxe' | 'luxury')[];
+                    service: number | Service;
+                    id?: string | null;
+                  }[]
+                | null;
+              alternatives?:
+                | {
+                    name: string;
+                    service: number | Service;
+                    priceModifier?: number | null;
+                    id?: string | null;
+                  }[]
+                | null;
               id?: string | null;
             }[]
           | null;
@@ -613,100 +637,6 @@ export interface Tour {
     };
     [k: string]: unknown;
   } | null;
-  specs_accommodation?: {
-    items?:
-      | {
-          /**
-           * e.g. Day 1: Hanoi
-           */
-          day_title: string;
-          options?:
-            | {
-                hotel_name: string;
-                hotel_grade: 'Economy' | 'Deluxe' | 'Luxury';
-                star_rating?: number | null;
-                review_count?: number | null;
-                trip_advisor_url?: string | null;
-                image?: (number | null) | Media;
-                description?: string | null;
-                id?: string | null;
-              }[]
-            | null;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  specs_experiences?: {
-    items?: (number | Experience)[] | null;
-  };
-  specs_transport?: {
-    content?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  specs_team?: {
-    content?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  specs_meals?: {
-    description?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
-  specs_services?: {
-    content?: {
-      root: {
-        type: string;
-        children: {
-          type: any;
-          version: number;
-          [k: string]: unknown;
-        }[];
-        direction: ('ltr' | 'rtl') | null;
-        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-        indent: number;
-        version: number;
-      };
-      [k: string]: unknown;
-    } | null;
-  };
   gallery?:
     | {
         image: number | Media;
@@ -730,19 +660,37 @@ export interface Tour {
   createdAt: string;
 }
 /**
- * Quản lý Quận/Huyện (Districts)
+ * Quản lý Điểm đến (Level 2 - e.g. Hanoi, Halong Bay, Siem Reap)
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "districts".
+ * via the `definition` "destinations".
  */
-export interface District {
+export interface Destination {
   id: number;
   name: string;
   /**
-   * URL-friendly slug (e.g. hoan-kiem)
+   * URL-friendly slug (e.g. hanoi)
    */
   slug: string;
+  latitude?: number | null;
+  longitude?: number | null;
   country: number | Country;
+  featuredImage?: (number | null) | Media;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -760,6 +708,8 @@ export interface Country {
    */
   slug: string;
   code?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   region?: ('southeast-asia' | 'east-asia' | 'south-asia') | null;
   /**
    * Select specific FAQs to display on this country page.
@@ -825,48 +775,6 @@ export interface Faq {
   createdAt: string;
 }
 /**
- * Quản lý điểm đến (Cities, Provinces)
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "destinations".
- */
-export interface Destination {
-  id: number;
-  name: string;
-  /**
-   * URL slug (e.g. ha-long-bay)
-   */
-  slug: string;
-  country: number | Country;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  featuredImage?: (number | null) | Media;
-  /**
-   * Các Quận/Huyện thuộc điểm đến này
-   */
-  districts?: (number | District)[] | null;
-  /**
-   * @minItems 2
-   * @maxItems 2
-   */
-  geo?: [number, number] | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tags".
  */
@@ -921,6 +829,7 @@ export interface Service {
    * e.g. Water Puppet Show Ticket (standard)
    */
   title: string;
+  level?: ('economy' | 'deluxe' | 'luxury') | null;
   description?: {
     root: {
       type: string;
@@ -937,12 +846,21 @@ export interface Service {
     [k: string]: unknown;
   } | null;
   type: number | ServiceType;
-  destination?: (number | null) | Destination;
+  /**
+   * Điểm đến lớn (e.g. Hanoi, Halong Bay)
+   */
+  destination: number | Destination;
+  /**
+   * Khu vực cụ thể (e.g. Hoan Kiem, Bai Chay)
+   */
   district?: (number | null) | District;
+  latitude?: number | null;
+  longitude?: number | null;
   relatedExperiences?: (number | Experience)[] | null;
   relatedBlogs?: (number | Blog)[] | null;
   unit?: string | null;
   leadTime?: string | null;
+  markets?: (number | Market)[] | null;
   /**
    * e.g. Non-refundable after booking
    */
@@ -982,6 +900,59 @@ export interface ServiceType {
   defaultUnit?: string | null;
   isActive?: boolean | null;
   notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quản lý Quận/Huyện (Districts)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "districts".
+ */
+export interface District {
+  id: number;
+  name: string;
+  /**
+   * URL-friendly slug (e.g. hanoi)
+   */
+  slug: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  /**
+   * Chọn thành phố/điểm đến lớn quản lý quận này
+   */
+  destination: number | Destination;
+  /**
+   * Đánh dấu nếu đây là khu vực có trạm trung chuyển lớn
+   */
+  isHub?: boolean | null;
+  logistics?: {
+    nearestAirport?: (number | null) | TransitHub;
+    nearestTrainStation?: (number | null) | TransitHub;
+    /**
+     * VD: 45 min from Airport, 10 min from Train station
+     */
+    transferNotes?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quản lý các trạm trung chuyển, đầu mối giao thông (Sân bay, Ga tàu, Bến cảng)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transit-hubs".
+ */
+export interface TransitHub {
+  id: number;
+  name: string;
+  code?: string | null;
+  type: 'airport' | 'train_station' | 'pier' | 'bus_station';
+  latitude?: number | null;
+  longitude?: number | null;
+  district: number | District;
+  country: number | Country;
+  description?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1029,7 +1000,8 @@ export interface Experience {
     };
     [k: string]: unknown;
   } | null;
-  location?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   country?: (number | null) | Country;
   destination?: (number | null) | Destination;
   updatedAt: string;
@@ -1128,6 +1100,41 @@ export interface Blog {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "markets".
+ */
+export interface Market {
+  id: number;
+  code: string;
+  name: string;
+  isActive?: boolean | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Định nghĩa các chủ đề trải nghiệm và ánh xạ tới loại dịch vụ tương ứng
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience-themes".
+ */
+export interface ExperienceTheme {
+  id: number;
+  /**
+   * e.g. SHOW, FOOD, BOAT
+   */
+  code: string;
+  name: string;
+  /**
+   * Ánh xạ chủ đề này vào loại dịch vụ cơ sở nào
+   */
+  serviceType: number | ServiceType;
+  description?: string | null;
+  isActive?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1201,6 +1208,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'service-types';
         value: number | ServiceType;
+      } | null)
+    | ({
+        relationTo: 'experience-themes';
+        value: number | ExperienceTheme;
+      } | null)
+    | ({
+        relationTo: 'markets';
+        value: number | Market;
+      } | null)
+    | ({
+        relationTo: 'transit-hubs';
+        value: number | TransitHub;
       } | null)
     | ({
         relationTo: 'services';
@@ -1521,9 +1540,10 @@ export interface ToursSelect<T extends boolean = true> {
   price?: T;
   priceNote?: T;
   videoUrl?: T;
-  priceOptions?:
+  tourTiers?:
     | T
     | {
+        code?: T;
         name?: T;
         price?: T;
         description?: T;
@@ -1534,66 +1554,33 @@ export interface ToursSelect<T extends boolean = true> {
     | T
     | {
         day?: T;
-        districts?: T;
+        destinations?: T;
         content?: T;
         services?:
           | T
           | {
               service?: T;
-              description?: T;
+              tierOverrides?:
+                | T
+                | {
+                    tiers?: T;
+                    service?: T;
+                    id?: T;
+                  };
+              alternatives?:
+                | T
+                | {
+                    name?: T;
+                    service?: T;
+                    priceModifier?: T;
+                    id?: T;
+                  };
               id?: T;
             };
         id?: T;
       };
   includes?: T;
   excludes?: T;
-  specs_accommodation?:
-    | T
-    | {
-        items?:
-          | T
-          | {
-              day_title?: T;
-              options?:
-                | T
-                | {
-                    hotel_name?: T;
-                    hotel_grade?: T;
-                    star_rating?: T;
-                    review_count?: T;
-                    trip_advisor_url?: T;
-                    image?: T;
-                    description?: T;
-                    id?: T;
-                  };
-              id?: T;
-            };
-      };
-  specs_experiences?:
-    | T
-    | {
-        items?: T;
-      };
-  specs_transport?:
-    | T
-    | {
-        content?: T;
-      };
-  specs_team?:
-    | T
-    | {
-        content?: T;
-      };
-  specs_meals?:
-    | T
-    | {
-        description?: T;
-      };
-  specs_services?:
-    | T
-    | {
-        content?: T;
-      };
   gallery?:
     | T
     | {
@@ -1675,7 +1662,8 @@ export interface ExperiencesSelect<T extends boolean = true> {
   short_description?: T;
   description?: T;
   content?: T;
-  location?: T;
+  latitude?: T;
+  longitude?: T;
   country?: T;
   destination?: T;
   updatedAt?: T;
@@ -1689,6 +1677,8 @@ export interface CountriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   code?: T;
+  latitude?: T;
+  longitude?: T;
   region?: T;
   faqs?: T;
   description?: T;
@@ -1703,11 +1693,11 @@ export interface CountriesSelect<T extends boolean = true> {
 export interface DestinationsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  latitude?: T;
+  longitude?: T;
   country?: T;
-  description?: T;
   featuredImage?: T;
-  districts?: T;
-  geo?: T;
+  description?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1718,7 +1708,17 @@ export interface DestinationsSelect<T extends boolean = true> {
 export interface DistrictsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  country?: T;
+  latitude?: T;
+  longitude?: T;
+  destination?: T;
+  isHub?: T;
+  logistics?:
+    | T
+    | {
+        nearestAirport?: T;
+        nearestTrainStation?: T;
+        transferNotes?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1766,20 +1766,65 @@ export interface ServiceTypesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience-themes_select".
+ */
+export interface ExperienceThemesSelect<T extends boolean = true> {
+  code?: T;
+  name?: T;
+  serviceType?: T;
+  description?: T;
+  isActive?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "markets_select".
+ */
+export interface MarketsSelect<T extends boolean = true> {
+  code?: T;
+  name?: T;
+  isActive?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transit-hubs_select".
+ */
+export interface TransitHubsSelect<T extends boolean = true> {
+  name?: T;
+  code?: T;
+  type?: T;
+  latitude?: T;
+  longitude?: T;
+  district?: T;
+  country?: T;
+  description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services_select".
  */
 export interface ServicesSelect<T extends boolean = true> {
   serviceCode?: T;
   status?: T;
   title?: T;
+  level?: T;
   description?: T;
   type?: T;
   destination?: T;
   district?: T;
+  latitude?: T;
+  longitude?: T;
   relatedExperiences?: T;
   relatedBlogs?: T;
   unit?: T;
   leadTime?: T;
+  markets?: T;
   cancellationPolicy?: T;
   notes?: T;
   updatedAt?: T;

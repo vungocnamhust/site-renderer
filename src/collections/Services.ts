@@ -6,7 +6,7 @@ export const Services: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     group: 'Master Data',
-    defaultColumns: ['serviceCode', 'title', 'type', 'destination', 'district', 'status'],
+    defaultColumns: ['serviceCode', 'title', 'type', 'level', 'district', 'status'],
     description: 'Danh mục các dịch vụ tiêu chuẩn theo schema hệ thống',
   },
   access: {
@@ -53,9 +53,26 @@ export const Services: CollectionConfig = {
       },
     },
     {
-      name: 'description',
-      label: 'Description',
-      type: 'richText',
+      type: 'row',
+      fields: [
+         {
+          name: 'level',
+          label: 'Service Level',
+          type: 'select',
+          options: [
+            { label: 'Economy / 3-Star', value: 'economy' },
+            { label: 'Deluxe / 4-Star', value: 'deluxe' },
+            { label: 'Luxury / 5-Star', value: 'luxury' }
+          ],
+          admin: { width: '50%' }
+         },
+         {
+             name: 'description',
+             label: 'Description',
+             type: 'richText',
+             admin: { width: '50%' }
+         }
+      ]
     },
     {
       type: 'row',
@@ -70,21 +87,61 @@ export const Services: CollectionConfig = {
         },
         {
           name: 'destination',
-          label: 'City/Province',
+          label: 'Destination / City (Level 2)',
           type: 'relationship',
           relationTo: 'destinations',
-          required: false,
-          admin: { width: '33%' },
+          required: true,
+          admin: { 
+            width: '33%',
+            description: 'Điểm đến lớn (e.g. Hanoi, Halong Bay)'
+          },
         },
         {
           name: 'district',
-          label: 'District',
+          label: 'District / Area (Level 1)',
           type: 'relationship',
           relationTo: 'districts',
           required: false,
-          admin: { width: '34%' },
+          admin: { 
+            width: '33%',
+            description: 'Khu vực cụ thể (e.g. Hoan Kiem, Bai Chay)'
+          },
+          filterOptions: ({ data }: any) => {
+              if (data?.destination) {
+                  const destId = typeof data.destination === 'object' ? data.destination.id : data.destination;
+                  return {
+                      destination: {
+                          equals: destId
+                      }
+                  }
+              }
+              return true;
+          }
         },
+        {
+             name: 'dummy',
+             type: 'ui',
+             admin: { width: '34%' },
+             label: 'Location Details'
+        }
       ],
+    },
+    {
+       type: 'row',
+       fields: [
+         {
+           name: 'latitude',
+           type: 'number',
+           label: 'Latitude (Level 0)',
+           admin: { width: '50%' }
+         },
+         {
+           name: 'longitude',
+           type: 'number',
+           label: 'Longitude (Level 0)',
+           admin: { width: '50%' }
+         }
+       ]
     },
     {
       type: 'row',
@@ -116,7 +173,7 @@ export const Services: CollectionConfig = {
           type: 'text',
           admin: { 
             placeholder: 'e.g. per ticket, per person',
-            width: '50%' 
+            width: '33%' 
           },
         },
         {
@@ -125,8 +182,16 @@ export const Services: CollectionConfig = {
           type: 'text',
           admin: { 
             placeholder: 'e.g. 24h, 48h',
-            width: '50%' 
+            width: '33%' 
           },
+        },
+        {
+          name: 'markets',
+          label: 'Target Markets',
+          type: 'relationship',
+          relationTo: 'markets',
+          hasMany: true,
+          admin: { width: '34%' }
         },
       ],
     },

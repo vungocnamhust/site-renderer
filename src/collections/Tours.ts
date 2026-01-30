@@ -77,16 +77,16 @@ export const Tours: CollectionConfig = {
     {
         name: 'destinations',
         type: 'array',
-        label: 'Districts List (Auto-calculated)',
+        label: 'Destinations List (Auto-calculated)',
         admin: {
             readOnly: true,
-            description: 'This list is automatically populated and calculated based on the districts of the services used in the itinerary.'
+            description: 'This list is automatically populated and calculated based on the destinations of the services used in the itinerary.'
         },
         fields: [
             {
                 name: 'destination',
                 type: 'relationship',
-                relationTo: 'districts',
+                relationTo: 'destinations',
                 required: true,
             },
             {
@@ -194,10 +194,11 @@ export const Tours: CollectionConfig = {
         },
         {
           name: 'price',
-          label: 'Price (USD)',
+          label: 'Price (USD) (Auto)',
           type: 'number',
           admin: {
-            description: 'Giá khởi điểm',
+            readOnly: true,
+            description: 'Tự động lấy giá thấp nhất từ Tour Price Tiers',
             width: '50%',
             position: 'sidebar',
           },
@@ -206,10 +207,11 @@ export const Tours: CollectionConfig = {
     },
     {
       name: 'priceNote',
-      label: 'Price Note',
+      label: 'Price Note (Auto)',
       type: 'text',
       admin: {
-        description: 'VD: "From $1,500 per person" hoặc "Price on request"',
+        readOnly: true,
+        description: 'Tự động tạo từ giá thấp nhất (VD: "From $1,500 per person")',
       },
     },
     {
@@ -217,14 +219,29 @@ export const Tours: CollectionConfig = {
         type: 'text',
         label: 'Highlight Video URL'
     },
-     {
-      name: 'priceOptions',
+    {
+      name: 'tourTiers',
       type: 'array',
-      label: 'Price Options (Budget/Deluxe/Luxury)',
+      label: 'Tour Price Tiers (Configuration)',
+      admin: {
+          description: 'Định nghĩa các hạng vé cho tour này (VD: Standard, Deluxe). Các hạng này sẽ được dùng để cấu hình dịch vụ trong lịch trình.'
+      },
       fields: [
-        { name: 'name', type: 'text', label: 'Option Name (e.g. Economy)' },
-        { name: 'price', type: 'number', label: 'Price (USD)' },
-        { name: 'description', type: 'textarea', label: 'Description/Inclusions' }
+        { 
+          name: 'code', 
+          type: 'select', 
+          required: true, 
+          label: 'Tier Type', 
+          options: [
+            { label: 'Economy / 3-Star', value: 'economy' },
+            { label: 'Deluxe / 4-Star', value: 'deluxe' },
+            { label: 'Luxury / 5-Star', value: 'luxury' }
+          ],
+          admin: { width: '50%' } 
+        },
+        { name: 'name', type: 'text', required: true, label: 'Display Name (e.g. Indochina Standard)', admin: { width: '50%' } },
+        { name: 'price', type: 'number', label: 'Base Price (USD)', admin: { width: '50%' } },
+        { name: 'description', type: 'textarea', label: 'Tier Description' }
       ]
     },
 
@@ -255,14 +272,14 @@ export const Tours: CollectionConfig = {
           }
         },
         {
-            name: 'districts',
-            label: 'Location/Districts (Auto-generated)',
+            name: 'destinations',
+            label: 'Locations / Destinations (Auto-generated)',
             type: 'relationship',
-            relationTo: 'districts',
+            relationTo: 'destinations',
             hasMany: true,
             admin: {
-                readOnly: true,
-                description: 'Danh sách các districts tồn tại trong danh sách dịch vụ của ngày này'
+              readOnly: true,
+              description: 'Tự động tổng hợp từ các dịch vụ trong ngày'
             }
         },
         {
@@ -276,20 +293,67 @@ export const Tours: CollectionConfig = {
             label: 'Services Breakdown',
             type: 'array',
             fields: [
-               {
-                  name: 'service',
-                  label: 'Select Service',
-                  type: 'relationship',
-                  relationTo: 'services',
-                  required: true,
-                  admin: { width: '40%', description: 'Chọn dịch vụ từ thư viện hoặc tạo mới' }
-               },
-               {
-                  name: 'description',
-                  type: 'text',
-                  label: 'Override Note / Inclusions',
-                  admin: { width: '60%', description: 'Ghi chú riêng cho ngày này (nếu có)' }
-               }
+                {
+                    name: 'service', // Default Service
+                    label: 'Primary Service (Default)',
+                    type: 'relationship',
+                    relationTo: 'services',
+                    required: true,
+                    admin: { description: 'Dịch vụ mặc định cho hạng thấp nhất hoặc chuẩn chung' }
+                },
+                {
+                    name: 'tierOverrides',
+                    label: 'Tier Specific Overrides',
+                    type: 'array',
+                    fields: [
+                        {
+                            name: 'tiers',
+                            label: 'Apply for Tiers',
+                            type: 'select',
+                            hasMany: true,
+                            options: [
+                                { label: 'Economy', value: 'economy' },
+                                { label: 'Deluxe', value: 'deluxe' },
+                                { label: 'Luxury', value: 'luxury' }
+                            ], 
+                            required: true
+                        },
+                        {
+                            name: 'service',
+                            label: 'Override Service',
+                            type: 'relationship',
+                            relationTo: 'services',
+                            required: true
+                        }
+                    ],
+                    admin: {
+                        description: 'Chọn dịch vụ khác cho các hạng vé cao cấp hơn (VD: Luxury dùng khách sạn 5 sao còn Standard dùng 3 sao)'
+                    }
+                },
+                {
+                    name: 'alternatives',
+                    label: 'Optional Upgrades / Alternatives',
+                    type: 'array',
+                    fields: [
+                         {
+                            name: 'name',
+                            type: 'text',
+                            label: 'Option Name',
+                            required: true
+                         },
+                         {
+                            name: 'service',
+                            type: 'relationship',
+                            relationTo: 'services',
+                            required: true
+                         },
+                         {
+                            name: 'priceModifier',
+                            type: 'number',
+                            label: 'Price Diff (+/-)'
+                         }
+                    ]
+                }
             ]
         }
       ]
@@ -311,140 +375,6 @@ export const Tours: CollectionConfig = {
       },
     },
 
-    // === DETAILED INCLUSIONS (FOR MODALS) ===
-    {
-        type: 'tabs',
-        tabs: [
-            {
-                label: 'Accommodation Details',
-                name: 'specs_accommodation',
-                fields: [
-                    {
-                        name: 'items',
-                        type: 'array',
-                        label: 'Daily Accommodation',
-                        fields: [
-                            {
-                                name: 'day_title',
-                                type: 'text',
-                                label: 'Day/Location Title',
-                                required: true,
-                                admin: { description: 'e.g. Day 1: Hanoi' }
-                            },
-                            {
-                                name: 'options',
-                                type: 'array',
-                                label: 'Hotel Options',
-                                fields: [
-                                    {
-                                        name: 'hotel_name',
-                                        type: 'text',
-                                        required: true,
-                                        label: 'Hotel Name'
-                                    },
-                                    {
-                                        name: 'hotel_grade',
-                                        type: 'select',
-                                        options: [
-                                            { label: 'Economy', value: 'Economy' },
-                                            { label: 'Deluxe', value: 'Deluxe' },
-                                            { label: 'Luxury', value: 'Luxury' }
-                                        ],
-                                        required: true,
-                                        label: 'Grade/Class'
-                                    },
-                                    {
-                                        name: 'star_rating',
-                                        type: 'number',
-                                        min: 1,
-                                        max: 5,
-                                        label: 'Star Rating'
-                                    },
-                                    {
-                                        name: 'review_count',
-                                        type: 'number',
-                                        label: 'Review Count'
-                                    },
-                                    {
-                                        name: 'trip_advisor_url',
-                                        type: 'text',
-                                        label: 'TripAdvisor URL'
-                                    },
-                                    {
-                                        name: 'image',
-                                        type: 'upload',
-                                        relationTo: 'media',
-                                        label: 'Hotel Image'
-                                    },
-                                    {
-                                        name: 'description',
-                                        type: 'textarea',
-                                        label: 'Short Description'
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                label: 'Experience Details',
-                name: 'specs_experiences',
-                fields: [
-                    {
-                        name: 'items',
-                        type: 'relationship',
-                        relationTo: 'experiences',
-                        hasMany: true,
-                        label: 'Related Experiences'
-                    }
-                ]
-            },
-            {
-                label: 'Transport Details',
-                name: 'specs_transport',
-                fields: [
-                    {
-                        name: 'content',
-                        type: 'richText',
-                        label: 'Transport Description'
-                    }
-                ]
-            },
-            {
-                label: 'Team Details',
-                name: 'specs_team',
-                fields: [
-                    {
-                        name: 'content',
-                        type: 'richText',
-                    }
-                ]
-            },
-            {
-                label: 'Meals Details',
-                name: 'specs_meals',
-                fields: [
-                    {
-                        name: 'description',
-                        type: 'richText',
-                        label: 'Meals Description'
-                    }
-                ]
-            },
-            {
-                label: 'Services Details',
-                name: 'specs_services',
-                fields: [
-                    {
-                        name: 'content',
-                        type: 'richText',
-                        label: 'Services Description'
-                    }
-                ]
-            }
-        ]
-    },
 
     // === GALLERY (MOVE TO LAST) ===
     {
@@ -518,17 +448,38 @@ export const Tours: CollectionConfig = {
             if (Array.isArray(data.itinerary) && data.itinerary.length > 0) {
                 // 1. Collect all service IDs
                 const allServiceIds = new Set<string>();
+                
+                const collectServiceId = (s: any) => {
+                    if (!s) return;
+                    // Primary Service
+                    if (s.service) {
+                         const id = typeof s.service === 'object' ? s.service?.id : s.service;
+                         if (id) allServiceIds.add(id);
+                    }
+                    // Tier Overrides
+                    if (s.tierOverrides && Array.isArray(s.tierOverrides)) {
+                        s.tierOverrides.forEach((o: any) => {
+                            const id = typeof o.service === 'object' ? o.service?.id : o.service;
+                            if (id) allServiceIds.add(id);
+                        });
+                    }
+                    // Alternatives
+                    if (s.alternatives && Array.isArray(s.alternatives)) {
+                        s.alternatives.forEach((a: any) => {
+                            const id = typeof a.service === 'object' ? a.service?.id : a.service;
+                            if (id) allServiceIds.add(id);
+                        });
+                    }
+                };
+
                 data.itinerary.forEach((day: any) => {
                   if (day.services && Array.isArray(day.services)) {
-                    day.services.forEach((s: any) => {
-                      const id = typeof s.service === 'object' ? s.service?.id : s.service;
-                      if (id) allServiceIds.add(id);
-                    });
+                    day.services.forEach(collectServiceId);
                   }
                 });
 
-                // 2. Fetch services to get their districts
-                let serviceMap = new Map<string, string>(); // Service ID -> District ID
+                // 2. Fetch services to get their destinations
+                let serviceMap = new Map<string, string>(); // Service ID -> Destination ID
                 if (allServiceIds.size > 0) {
                   const servicesDocs = await req.payload.find({
                     collection: 'services',
@@ -537,35 +488,55 @@ export const Tours: CollectionConfig = {
                     pagination: false,
                   });
                   servicesDocs.docs.forEach((s: any) => {
-                    const distId = typeof s.district === 'object' ? s.district?.id : s.district;
-                    if (distId) serviceMap.set(s.id, distId);
+                    const destId = typeof s.destination === 'object' ? s.destination?.id : s.destination;
+                    if (destId) serviceMap.set(s.id, destId);
                   });
                 }
 
-                // 3. Process each day to set its districts
-                const distCountMap = new Map<string, number>(); // District ID -> days count
+                // 3. Process each day to set its destinations
+                const distCountMap = new Map<string, number>(); // Destination ID -> days count
                 const uniqueOrder: string[] = [];
 
                 data.itinerary.forEach((day: any) => {
-                  const dayDistricts = new Set<string>();
+                  const dayDestinations = new Set<string>();
                   if (day.services && Array.isArray(day.services)) {
                     day.services.forEach((s: any) => {
-                      const id = typeof s.service === 'object' ? s.service?.id : s.service;
-                      const distId = serviceMap.get(id);
-                      if (distId) dayDistricts.add(distId);
+                        // Collect destinations from all potential services in this slot
+                        // 1. Primary
+                         if (s.service) {
+                             const id = typeof s.service === 'object' ? s.service?.id : s.service;
+                             const d = serviceMap.get(id);
+                             if (d) dayDestinations.add(d);
+                         }
+                        // 2. Overrides
+                        if (s.tierOverrides && Array.isArray(s.tierOverrides)) {
+                            s.tierOverrides.forEach((o: any) => {
+                                const id = typeof o.service === 'object' ? o.service?.id : o.service;
+                                const d = serviceMap.get(id);
+                                if (d) dayDestinations.add(d);
+                            });
+                        }
+                         // 3. Alternatives (Usually in same location, but good to check)
+                        if (s.alternatives && Array.isArray(s.alternatives)) {
+                            s.alternatives.forEach((a: any) => {
+                                const id = typeof a.service === 'object' ? a.service?.id : a.service;
+                                const d = serviceMap.get(id);
+                                if (d) dayDestinations.add(d);
+                            });
+                        }
                     });
                   }
                   
-                  // Set auto-generated districts for the day
-                  day.districts = Array.from(dayDistricts);
+                  // Set auto-generated destinations for the day
+                  day.destinations = Array.from(dayDestinations);
 
-                  // Update overall tour districts
-                  dayDistricts.forEach(distId => {
-                    if (!distCountMap.has(distId)) {
-                        distCountMap.set(distId, 1);
-                        uniqueOrder.push(distId);
+                  // Update overall tour destinations
+                  dayDestinations.forEach(destId => {
+                    if (!distCountMap.has(destId)) {
+                        distCountMap.set(destId, 1);
+                        uniqueOrder.push(destId);
                     } else {
-                        distCountMap.set(distId, (distCountMap.get(distId) || 0) + 1);
+                        distCountMap.set(destId, (distCountMap.get(destId) || 0) + 1);
                     }
                   });
                 });
@@ -640,6 +611,19 @@ export const Tours: CollectionConfig = {
              data.routeTitle = '';
              data.routeSlug = '';
              data.tourType = 'single-country';
+        }
+
+        // --- AUTO-GENERATE PRICE & PRICE NOTE FROM TOUR TIERS ---
+        if (data.tourTiers && Array.isArray(data.tourTiers) && data.tourTiers.length > 0) {
+            const prices = data.tourTiers
+                .map((tier: any) => tier.price)
+                .filter((p: any) => typeof p === 'number' && p > 0);
+            
+            if (prices.length > 0) {
+                const minPrice = Math.min(...prices);
+                data.price = minPrice;
+                data.priceNote = `From $${minPrice.toLocaleString()} per person`;
+            }
         }
 
         return data

@@ -48,6 +48,23 @@ export const Countries: CollectionConfig = {
       }
     },
     {
+      type: 'row',
+      fields: [
+        {
+          name: 'latitude',
+          type: 'number',
+          label: 'Latitude',
+          admin: { width: '50%' }
+        },
+        {
+          name: 'longitude',
+          type: 'number',
+          label: 'Longitude',
+          admin: { width: '50%' }
+        }
+      ]
+    },
+    {
       name: 'region',
       type: 'select',
       options: [

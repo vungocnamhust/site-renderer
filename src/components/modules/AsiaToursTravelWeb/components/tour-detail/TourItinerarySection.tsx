@@ -55,26 +55,46 @@ export function TourItinerarySection({ tour }: TourItinerarySectionProps) {
           </div>
           {/* Right - Map or Details */}
           <div className="right-map-box">
-            {itinerary.length > 0 && (
-              <div style={{ padding: '20px' }}>
+            {itinerary.map((item: any, idx: number) => (
+              <div key={idx} className={`itinerary-item ${idx === 0 ? '' : 'hidden'}`} style={{ padding: '20px', display: idx === 0 ? 'block' : 'none' }}>
                 <h3 style={{ marginBottom: '15px', fontWeight: 600 }}>
-                  {itinerary[0]?.day}
+                  {item.day}
                 </h3>
-                <p style={{ lineHeight: 2, color: '#555' }}>
-                  {getContentText(itinerary[0]?.content)}
-                </p>
-                {itinerary[0]?.meals && itinerary[0].meals.length > 0 && (
-                  <div style={{ marginTop: '15px' }}>
-                    <strong>Meals:</strong> {itinerary[0].meals.join(', ')}
+                <div
+                  style={{ lineHeight: 2, color: '#555', marginBottom: '20px' }}
+                  dangerouslySetInnerHTML={{ __html: getContentText(item.content) }}
+                />
+
+                {/* New Service Slot Display */}
+                {item.services && item.services.length > 0 && (
+                  <div className="day-services" style={{ borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                    <h4 style={{ fontSize: '16px', fontWeight: 600, marginBottom: '10px' }}>Included Services:</h4>
+                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                      {item.services.map((slot: any, sIdx: number) => {
+                        const mainService = typeof slot.service === 'object' ? slot.service : null;
+                        return (
+                          <li key={sIdx} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <i className="icon-font icon-check" style={{ color: '#27ae60' }}></i>
+                            <span>
+                              {mainService ? mainService.title : 'Service'}
+                              {mainService?.level && <span className="badge badge-sm" style={{ marginLeft: '8px', fontSize: '10px', background: '#eee', padding: '2px 6px', borderRadius: '4px' }}>{mainService.level.toUpperCase()}</span>}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
                 )}
-                {itinerary[0]?.accommodation && (
-                  <div style={{ marginTop: '10px' }}>
-                    <strong>Accommodation:</strong> {itinerary[0].accommodation}
+
+                {/* Auto-generated districts from beforeChange hook */}
+                {item.districts && item.districts.length > 0 && (
+                  <div style={{ marginTop: '10px', fontSize: '14px', color: '#888' }}>
+                    <i className="icon-font icon-map-marker" style={{ marginRight: '5px' }}></i>
+                    {item.districts.length} Locations visited
                   </div>
                 )}
               </div>
-            )}
+            ))}
           </div>
         </div>
       </div>

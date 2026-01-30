@@ -7,7 +7,7 @@ export const Destinations: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Locations',
     defaultColumns: ['name', 'country', 'updatedAt'],
-    description: 'Quản lý điểm đến (Cities, Provinces)',
+    description: 'Quản lý Điểm đến (Level 2 - e.g. Hanoi, Halong Bay, Siem Reap)',
   },
   access: {
     read: () => true,
@@ -20,61 +20,62 @@ export const Destinations: CollectionConfig = {
       label: 'Destination Name',
     },
     {
-        name: 'slug',
-        type: 'text',
-        required: true,
-        unique: true,
-        admin: {
-            description: 'URL slug (e.g. ha-long-bay)',
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        description: 'URL-friendly slug (e.g. hanoi)',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, data }) => {
+            if (!value && data?.name) {
+              return data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+            }
+            return value
+          },
+        ],
+      },
+    },
+    {
+      type: 'row',
+      fields: [
+        {
+          name: 'latitude',
+          type: 'number',
+          label: 'Latitude',
+          admin: { width: '50%' }
         },
-        hooks: {
-            beforeValidate: [
-                ({ value, data }) => {
-                    if (!value && data?.name) {
-                        return data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-                    }
-                    return value;
-                }
-            ]
+        {
+          name: 'longitude',
+          type: 'number',
+          label: 'Longitude',
+          admin: { width: '50%' }
         }
+      ]
     },
     {
       name: 'country',
       type: 'relationship',
       relationTo: 'countries',
       required: true,
-      hasMany: false,
       label: 'Country',
       admin: {
-          position: 'sidebar',
-      }
+        position: 'sidebar',
+      },
     },
     {
-      name: 'description',
-      type: 'richText',
-      label: 'Description',
+        name: 'featuredImage',
+        type: 'upload',
+        relationTo: 'media',
+        label: 'Hero Image',
     },
     {
-      name: 'featuredImage',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Featured Image',
-    },
-    {
-      name: 'districts',
-      type: 'relationship',
-      relationTo: 'districts',
-      hasMany: true,
-      label: 'Districts in this Destination',
-      admin: {
-          description: 'Các Quận/Huyện thuộc điểm đến này'
-      }
-    },
-    {
-      name: 'geo',
-      type: 'point',
-      label: 'Geolocation (Lat, Lng)',
-    },
+        name: 'description',
+        type: 'richText',
+        label: 'Description'
+    }
   ],
 }
 
