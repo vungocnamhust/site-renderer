@@ -86,44 +86,26 @@ export const Services: CollectionConfig = {
           admin: { width: '33%' },
         },
         {
-          name: 'destination',
-          label: 'Destination / City (Level 2)',
-          type: 'relationship',
-          relationTo: 'destinations',
-          required: true,
-          admin: { 
-            width: '33%',
-            description: 'Điểm đến lớn (e.g. Hanoi, Halong Bay)'
-          },
-        },
-        {
           name: 'district',
-          label: 'District / Area (Level 1)',
+          label: 'District / City',
           type: 'relationship',
           relationTo: 'districts',
-          required: false,
-          admin: { 
+          required: true,
+          admin: {
             width: '33%',
-            description: 'Khu vực cụ thể (e.g. Hoan Kiem, Bai Chay)'
+            description: 'Thành phố/Vùng quản lý dịch vụ này (Hanoi, Bangkok, Halong)'
           },
-          filterOptions: ({ data }: any) => {
-              if (data?.destination) {
-                  const destId = typeof data.destination === 'object' ? data.destination.id : data.destination;
-                  return {
-                      destination: {
-                          equals: destId
-                      }
-                  }
-              }
-              return true;
-          }
         },
         {
-             name: 'dummy',
-             type: 'ui',
-             admin: { width: '34%' },
-             label: 'Location Details'
-        }
+          name: 'destination',
+          label: 'Specific Destination / Spot',
+          type: 'relationship',
+          relationTo: 'destinations',
+          admin: {
+            width: '33%',
+            description: 'Điểm danh thắng cụ thể (Vịnh Lan Hạ, Nhà Thờ Lớn)'
+          },
+        },
       ],
     },
     {

@@ -56,13 +56,14 @@ export const Destinations: CollectionConfig = {
       ]
     },
     {
-      name: 'country',
+      name: 'district',
       type: 'relationship',
-      relationTo: 'countries',
+      relationTo: 'districts',
       required: true,
-      label: 'Country',
+      label: 'District / City',
       admin: {
         position: 'sidebar',
+        description: 'Chọn Thành phố/Vùng (Hanoi, Bangkok) chứa điểm đến này'
       },
     },
     {

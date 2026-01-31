@@ -23,16 +23,33 @@ const dynamicContentGroups: Field[] = SCHEMAS.map(mod => ({
   fields: mod.fields,
 }))
 
-// Helper to recursively remove 'id' fields
-const cleanData = (obj: any): any => {
+// Helper to recursively remove 'id' fields that cause validation errors in Payload
+// while preserving necessary IDs for relationships and array rows.
+const cleanData = (obj: any, isRoot = true): any => {
+  if (obj === null || obj === undefined) return obj
+
   if (Array.isArray(obj)) {
-    return obj.map(cleanData)
+    return obj.map(item => cleanData(item, false))
   }
-  if (obj && typeof obj === 'object') {
+
+  if (typeof obj === 'object') {
+    // If it's a populated media relationship, we should return just the ID.
+    // We check for 'filename' AND 'mimeType' to be sure it's an upload/media object.
+    // We EXCLUDE objects that likely aren't media even if they have some fields (like social links).
+    if (obj.id && obj.filename && obj.mimeType) {
+      return obj.id
+    }
+
     const newObj: any = {}
     for (const key in obj) {
-      if (key === 'id') continue
-      newObj[key] = cleanData(obj[key])
+      // Remove 'id' only at the root level of the document to avoid Payload validation errors.
+      // Array rows NEED their 'id' to be updated correctly instead of recreated.
+      if (key === 'id' && isRoot) continue
+      
+      // Also remove common metadata that shouldn't be in the update payload
+      if (key === 'updatedAt' || key === 'createdAt' || key === '__v' || key === '_version') continue
+
+      newObj[key] = cleanData(obj[key], false)
     }
     return newObj
   }

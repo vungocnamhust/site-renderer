@@ -6,7 +6,7 @@ export const Districts: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     group: 'Locations',
-    defaultColumns: ['name', 'country', 'updatedAt'],
+    defaultColumns: ['name', 'country', 'destination', 'updatedAt'],
     description: 'Quản lý Quận/Huyện (Districts)',
   },
   access: {
@@ -59,14 +59,24 @@ export const Districts: CollectionConfig = {
       ]
     },
     {
+      name: 'country',
+      type: 'relationship',
+      relationTo: 'countries',
+      required: true,
+      label: 'Country',
+      admin: {
+        position: 'sidebar',
+        description: 'Chọn quốc gia của quận/thành phố này'
+      },
+    },
+    {
       name: 'destination',
       type: 'relationship',
       relationTo: 'destinations',
-      required: true,
-      label: 'Destination (Level 2)',
+      label: 'Parent Destination',
       admin: {
         position: 'sidebar',
-        description: 'Chọn thành phố/điểm đến lớn quản lý quận này'
+        description: 'Chọn điểm đến chính (Level 2) của quận này'
       },
     },
     {

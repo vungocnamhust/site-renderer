@@ -144,11 +144,11 @@ export const Experiences: CollectionConfig = {
             admin: { width: '50%' }
           },
           {
-            name: 'destination',
+            name: 'district',
             type: 'relationship',
-            relationTo: 'destinations',
+            relationTo: 'districts',
             hasMany: false,
-            label: 'Destination / City (Level 2)',
+            label: 'District / City',
             filterOptions: ({ data }: any) => {
                 if (data?.country) {
                     const countryId = typeof data.country === 'object' ? data.country.id : data.country;

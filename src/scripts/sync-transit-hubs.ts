@@ -45,12 +45,46 @@ async function syncSchemaManually() {
         ADD COLUMN IF NOT EXISTS "logistics_transfer_notes" varchar;
     `)
 
-    // 4. Fix Payload Document Locking tables for new collections
+    // 4. Update Districts table: change destination_id to country_id
+    await db.execute(`
+        ALTER TABLE "districts" 
+        ADD COLUMN IF NOT EXISTS "country_id" integer;
+        
+        ALTER TABLE "districts" 
+        ALTER COLUMN "destination_id" DROP NOT NULL;
+    `)
+
+    // 5. Update Blogs relationship table
+    await db.execute(`
+        ALTER TABLE "blogs_rels" 
+        ADD COLUMN IF NOT EXISTS "districts_id" integer;
+    `)
+
+    // 6. Update FAQs relationship table
+    await db.execute(`
+        ALTER TABLE "faqs_rels" 
+        ADD COLUMN IF NOT EXISTS "districts_id" integer;
+    `)
+
+    // 7. Create tours_districts table (renamed from tours_destinations)
+    await db.execute(`
+        CREATE TABLE IF NOT EXISTS "tours_districts" (
+            "_order" integer NOT NULL,
+            "_parent_id" integer NOT NULL,
+            "id" varchar PRIMARY KEY,
+            "district_id" integer NOT NULL,
+            "image_id" integer,
+            "duration_days" numeric
+        );
+    `)
+
+    // 8. Fix Payload Document Locking tables for new collections and renamed ones
     await db.execute(`
         ALTER TABLE "payload_locked_documents_rels" 
         ADD COLUMN IF NOT EXISTS "transit_hubs_id" integer,
         ADD COLUMN IF NOT EXISTS "markets_id" integer,
-        ADD COLUMN IF NOT EXISTS "experience_themes_id" integer;
+        ADD COLUMN IF NOT EXISTS "experience_themes_id" integer,
+        ADD COLUMN IF NOT EXISTS "districts_id" integer;
     `)
 
     console.log('Manual sync completed successfully.')

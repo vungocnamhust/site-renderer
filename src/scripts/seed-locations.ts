@@ -24,16 +24,16 @@ async function seedLocationsAndHubs() {
     vnId = vnRes.docs[0].id
   }
 
-  // 2. Seed Destination
-  console.log('Seeding Destination: Hanoi...')
+  // 2. Seed Districts (City level)
+  console.log('Seeding District: Hanoi...')
   const hanRes = await payload.find({
-    collection: 'destinations',
+    collection: 'districts',
     where: { slug: { equals: 'hanoi' } }
   })
   let hanoiId: any
   if (hanRes.docs.length === 0) {
     const created: any = await payload.create({
-      collection: 'destinations',
+      collection: 'districts',
       data: { name: 'Hanoi', slug: 'hanoi', country: vnId } as any
     })
     hanoiId = created.id
@@ -41,7 +41,7 @@ async function seedLocationsAndHubs() {
     hanoiId = hanRes.docs[0].id
   }
 
-  // 3. Seed Districts (Hub areas)
+  // 3. Seed Districts (Hub areas / Sub-locations)
   console.log('Seeding District: Soc Son (Hanoi)...')
   const ssRes = await payload.find({
     collection: 'districts',
@@ -51,7 +51,7 @@ async function seedLocationsAndHubs() {
   if (ssRes.docs.length === 0) {
     const created: any = await payload.create({
       collection: 'districts',
-      data: { name: 'Soc Son', slug: 'soc-son', destination: hanoiId, isHub: true } as any
+      data: { name: 'Soc Son', slug: 'soc-son', country: vnId, isHub: true } as any
     })
     socSonId = created.id
   } else {
@@ -96,7 +96,7 @@ async function seedLocationsAndHubs() {
       data: { 
         name: 'Hoan Kiem', 
         slug: 'hoan-kiem', 
-        destination: hanoiId,
+        country: vnId,
         logistics: {
             nearestAirport: noiBaiId,
             transferNotes: 'Approx 45-60 mins transfer to Hanoi Old Quarter'
@@ -108,6 +108,7 @@ async function seedLocationsAndHubs() {
         collection: 'districts',
         id: hkRes.docs[0].id,
         data: {
+            country: vnId,
             logistics: {
                 nearestAirport: noiBaiId,
                 transferNotes: 'Approx 45-60 mins transfer to Hanoi Old Quarter'

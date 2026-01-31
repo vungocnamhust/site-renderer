@@ -75,18 +75,18 @@ export const Tours: CollectionConfig = {
     },
 
     {
-        name: 'destinations',
+        name: 'districts',
         type: 'array',
-        label: 'Destinations List (Auto-calculated)',
+        label: 'Districts / Cities List (Auto-calculated)',
         admin: {
             readOnly: true,
-            description: 'This list is automatically populated and calculated based on the destinations of the services used in the itinerary.'
+            description: 'Danh sách các Thành phố/Vùng đi qua (Hanoi, Halong, Bangkok...)'
         },
         fields: [
             {
-                name: 'destination',
+                name: 'district',
                 type: 'relationship',
-                relationTo: 'destinations',
+                relationTo: 'districts',
                 required: true,
             },
             {
@@ -101,6 +101,17 @@ export const Tours: CollectionConfig = {
                 label: 'Days spent'
             }
         ]
+    },
+    {
+        name: 'destinations',
+        type: 'relationship',
+        relationTo: 'destinations',
+        hasMany: true,
+        label: 'Detailed Destinations / Spots (Auto-calculated)',
+        admin: {
+            readOnly: true,
+            description: 'Danh sách các danh thắng, điểm tham quan chi tiết (Vịnh Hạ Long, Nhà Thờ Lớn...)'
+        }
     },
     {
       type: 'row',
@@ -272,14 +283,25 @@ export const Tours: CollectionConfig = {
           }
         },
         {
+            name: 'cityLocations',
+            label: 'Cities (Auto-generated)',
+            type: 'relationship',
+            relationTo: 'districts',
+            hasMany: true,
+            admin: {
+              readOnly: true,
+              description: 'Tự động tổng hợp Thành phố từ các dịch vụ'
+            }
+        },
+        {
             name: 'destinations',
-            label: 'Locations / Destinations (Auto-generated)',
+            label: 'Spots / Destinations (Auto-generated)',
             type: 'relationship',
             relationTo: 'destinations',
             hasMany: true,
             admin: {
               readOnly: true,
-              description: 'Tự động tổng hợp từ các dịch vụ trong ngày'
+              description: 'Tự động tổng hợp các danh thắng từ các dịch vụ'
             }
         },
         {
@@ -478,8 +500,10 @@ export const Tours: CollectionConfig = {
                   }
                 });
 
-                // 2. Fetch services to get their destinations
-                let serviceMap = new Map<string, string>(); // Service ID -> Destination ID
+                // 2. Fetch services to get their location hierarchy
+                let serviceDistrictMap = new Map<string, string>(); // Service ID -> District ID
+                let serviceSpotMap = new Map<string, string>();    // Service ID -> Destination ID
+                
                 if (allServiceIds.size > 0) {
                   const servicesDocs = await req.payload.find({
                     collection: 'services',
@@ -488,64 +512,61 @@ export const Tours: CollectionConfig = {
                     pagination: false,
                   });
                   servicesDocs.docs.forEach((s: any) => {
-                    const destId = typeof s.destination === 'object' ? s.destination?.id : s.destination;
-                    if (destId) serviceMap.set(s.id, destId);
+                    const distId = typeof s.district === 'object' ? s.district?.id : s.district;
+                    if (distId) serviceDistrictMap.set(s.id, distId);
+                    
+                    const spotId = typeof s.destination === 'object' ? s.destination?.id : s.destination;
+                    if (spotId) serviceSpotMap.set(s.id, spotId);
                   });
                 }
 
-                // 3. Process each day to set its destinations
-                const distCountMap = new Map<string, number>(); // Destination ID -> days count
-                const uniqueOrder: string[] = [];
+                // 3. Process each day to set its locations
+                const districtCountMap = new Map<string, number>(); 
+                const uniqueDistOrder: string[] = [];
+                const allUniqueSpots = new Set<string>();
 
                 data.itinerary.forEach((day: any) => {
-                  const dayDestinations = new Set<string>();
+                  const dayDistricts = new Set<string>();
+                  const daySpots = new Set<string>();
+                  
                   if (day.services && Array.isArray(day.services)) {
                     day.services.forEach((s: any) => {
-                        // Collect destinations from all potential services in this slot
-                        // 1. Primary
-                         if (s.service) {
-                             const id = typeof s.service === 'object' ? s.service?.id : s.service;
-                             const d = serviceMap.get(id);
-                             if (d) dayDestinations.add(d);
-                         }
-                        // 2. Overrides
-                        if (s.tierOverrides && Array.isArray(s.tierOverrides)) {
-                            s.tierOverrides.forEach((o: any) => {
-                                const id = typeof o.service === 'object' ? o.service?.id : o.service;
-                                const d = serviceMap.get(id);
-                                if (d) dayDestinations.add(d);
-                            });
-                        }
-                         // 3. Alternatives (Usually in same location, but good to check)
-                        if (s.alternatives && Array.isArray(s.alternatives)) {
-                            s.alternatives.forEach((a: any) => {
-                                const id = typeof a.service === 'object' ? a.service?.id : a.service;
-                                const d = serviceMap.get(id);
-                                if (d) dayDestinations.add(d);
-                            });
-                        }
+                        const sIds: string[] = [];
+                        if (s.service) sIds.push(typeof s.service === 'object' ? s.service.id : s.service);
+                        if (s.tierOverrides) s.tierOverrides.forEach((o: any) => sIds.push(typeof o.service === 'object' ? o.service.id : o.service));
+                        if (s.alternatives) s.alternatives.forEach((a: any) => sIds.push(typeof a.service === 'object' ? a.service.id : a.service));
+
+                        sIds.forEach(id => {
+                            const d = serviceDistrictMap.get(id);
+                            if (d) dayDistricts.add(d);
+                            const sp = serviceSpotMap.get(id);
+                            if (sp) daySpots.add(sp);
+                        });
                     });
                   }
                   
-                  // Set auto-generated destinations for the day
-                  day.destinations = Array.from(dayDestinations);
+                  // Set auto-generated locations for the day
+                  day.cityLocations = Array.from(dayDistricts);
+                  day.destinations = Array.from(daySpots);
 
-                  // Update overall tour destinations
-                  dayDestinations.forEach(destId => {
-                    if (!distCountMap.has(destId)) {
-                        distCountMap.set(destId, 1);
-                        uniqueOrder.push(destId);
+                  // Update overall tour hierarchy
+                  dayDistricts.forEach(distId => {
+                    if (!districtCountMap.has(distId)) {
+                        districtCountMap.set(distId, 1);
+                        uniqueDistOrder.push(distId);
                     } else {
-                        distCountMap.set(destId, (distCountMap.get(destId) || 0) + 1);
+                        districtCountMap.set(distId, (districtCountMap.get(distId) || 0) + 1);
                     }
                   });
+                  daySpots.forEach(spotId => allUniqueSpots.add(spotId));
                 });
 
-                // 4. Update top-level destinations (Districts)
-                data.destinations = uniqueOrder.map(id => ({
-                    destination: id,
-                    duration_days: distCountMap.get(id)
+                // 4. Update top-level fields
+                data.districts = uniqueDistOrder.map(id => ({
+                    district: id,
+                    duration_days: districtCountMap.get(id)
                 }));
+                data.destinations = Array.from(allUniqueSpots);
 
                 // 5. Calculate Duration
                 const totalDays = data.itinerary.length;
@@ -553,6 +574,7 @@ export const Tours: CollectionConfig = {
                 data.duration = `${totalDays} Days / ${totalNights} Night${totalNights !== 1 ? 's' : ''}`;
             } else {
                 // Itinerary was cleared or is empty
+                data.districts = [];
                 data.destinations = [];
                 data.duration = '';
             }

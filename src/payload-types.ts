@@ -75,8 +75,8 @@ export interface Config {
     blogs: Blog;
     experiences: Experience;
     countries: Country;
-    destinations: Destination;
     districts: District;
+    destinations: Destination;
     tags: Tag;
     faqs: Faq;
     'service-types': ServiceType;
@@ -99,8 +99,8 @@ export interface Config {
     blogs: BlogsSelect<false> | BlogsSelect<true>;
     experiences: ExperiencesSelect<false> | ExperiencesSelect<true>;
     countries: CountriesSelect<false> | CountriesSelect<true>;
-    destinations: DestinationsSelect<false> | DestinationsSelect<true>;
     districts: DistrictsSelect<false> | DistrictsSelect<true>;
+    destinations: DestinationsSelect<false> | DestinationsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'service-types': ServiceTypesSelect<false> | ServiceTypesSelect<true>;
@@ -472,16 +472,20 @@ export interface Tour {
    */
   shortDescription?: string | null;
   /**
-   * This list is automatically populated and calculated based on the destinations of the services used in the itinerary.
+   * Danh sách các Thành phố/Vùng đi qua (Hanoi, Halong, Bangkok...)
    */
-  destinations?:
+  districts?:
     | {
-        destination: number | Destination;
+        district: number | District;
         image?: (number | null) | Media;
         duration_days?: number | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Danh sách các danh thắng, điểm tham quan chi tiết (Vịnh Hạ Long, Nhà Thờ Lớn...)
+   */
+  destinations?: (number | Destination)[] | null;
   countries: (number | Country)[];
   /**
    * Auto-calculated based on countries count
@@ -553,7 +557,11 @@ export interface Tour {
     | {
         day: string;
         /**
-         * Tự động tổng hợp từ các dịch vụ trong ngày
+         * Tự động tổng hợp Thành phố từ các dịch vụ
+         */
+        cityLocations?: (number | District)[] | null;
+        /**
+         * Tự động tổng hợp các danh thắng từ các dịch vụ
          */
         destinations?: (number | Destination)[] | null;
         content: {
@@ -660,12 +668,12 @@ export interface Tour {
   createdAt: string;
 }
 /**
- * Quản lý Điểm đến (Level 2 - e.g. Hanoi, Halong Bay, Siem Reap)
+ * Quản lý Quận/Huyện (Districts)
  *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "destinations".
+ * via the `definition` "districts".
  */
-export interface Destination {
+export interface District {
   id: number;
   name: string;
   /**
@@ -674,23 +682,26 @@ export interface Destination {
   slug: string;
   latitude?: number | null;
   longitude?: number | null;
+  /**
+   * Chọn quốc gia của quận/thành phố này
+   */
   country: number | Country;
-  featuredImage?: (number | null) | Media;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  /**
+   * Chọn điểm đến chính (Level 2) của quận này
+   */
+  destination?: (number | null) | Destination;
+  /**
+   * Đánh dấu nếu đây là khu vực có trạm trung chuyển lớn
+   */
+  isHub?: boolean | null;
+  logistics?: {
+    nearestAirport?: (number | null) | TransitHub;
+    nearestTrainStation?: (number | null) | TransitHub;
+    /**
+     * VD: 45 min from Airport, 10 min from Train station
+     */
+    transferNotes?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -763,7 +774,7 @@ export interface Faq {
     [k: string]: unknown;
   };
   countries?: (number | Country)[] | null;
-  destinations?: (number | Destination)[] | null;
+  districts?: (number | District)[] | null;
   tags?: (number | Tag)[] | null;
   tour_categories?: (number | TourCategory)[] | null;
   /**
@@ -816,6 +827,63 @@ export interface TourCategory {
   createdAt: string;
 }
 /**
+ * Quản lý Điểm đến (Level 2 - e.g. Hanoi, Halong Bay, Siem Reap)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "destinations".
+ */
+export interface Destination {
+  id: number;
+  name: string;
+  /**
+   * URL-friendly slug (e.g. hanoi)
+   */
+  slug: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  /**
+   * Chọn Thành phố/Vùng (Hanoi, Bangkok) chứa điểm đến này
+   */
+  district: number | District;
+  featuredImage?: (number | null) | Media;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Quản lý các trạm trung chuyển, đầu mối giao thông (Sân bay, Ga tàu, Bến cảng)
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "transit-hubs".
+ */
+export interface TransitHub {
+  id: number;
+  name: string;
+  code?: string | null;
+  type: 'airport' | 'train_station' | 'pier' | 'bus_station';
+  latitude?: number | null;
+  longitude?: number | null;
+  district: number | District;
+  country: number | Country;
+  description?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Danh mục các dịch vụ tiêu chuẩn theo schema hệ thống
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -847,13 +915,13 @@ export interface Service {
   } | null;
   type: number | ServiceType;
   /**
-   * Điểm đến lớn (e.g. Hanoi, Halong Bay)
+   * Thành phố/Vùng quản lý dịch vụ này (Hanoi, Bangkok, Halong)
    */
-  destination: number | Destination;
+  district: number | District;
   /**
-   * Khu vực cụ thể (e.g. Hoan Kiem, Bai Chay)
+   * Điểm danh thắng cụ thể (Vịnh Lan Hạ, Nhà Thờ Lớn)
    */
-  district?: (number | null) | District;
+  destination?: (number | null) | Destination;
   latitude?: number | null;
   longitude?: number | null;
   relatedExperiences?: (number | Experience)[] | null;
@@ -904,59 +972,6 @@ export interface ServiceType {
   createdAt: string;
 }
 /**
- * Quản lý Quận/Huyện (Districts)
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "districts".
- */
-export interface District {
-  id: number;
-  name: string;
-  /**
-   * URL-friendly slug (e.g. hanoi)
-   */
-  slug: string;
-  latitude?: number | null;
-  longitude?: number | null;
-  /**
-   * Chọn thành phố/điểm đến lớn quản lý quận này
-   */
-  destination: number | Destination;
-  /**
-   * Đánh dấu nếu đây là khu vực có trạm trung chuyển lớn
-   */
-  isHub?: boolean | null;
-  logistics?: {
-    nearestAirport?: (number | null) | TransitHub;
-    nearestTrainStation?: (number | null) | TransitHub;
-    /**
-     * VD: 45 min from Airport, 10 min from Train station
-     */
-    transferNotes?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Quản lý các trạm trung chuyển, đầu mối giao thông (Sân bay, Ga tàu, Bến cảng)
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "transit-hubs".
- */
-export interface TransitHub {
-  id: number;
-  name: string;
-  code?: string | null;
-  type: 'airport' | 'train_station' | 'pier' | 'bus_station';
-  latitude?: number | null;
-  longitude?: number | null;
-  district: number | District;
-  country: number | Country;
-  description?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "experiences".
  */
@@ -1003,7 +1018,7 @@ export interface Experience {
   latitude?: number | null;
   longitude?: number | null;
   country?: (number | null) | Country;
-  destination?: (number | null) | Destination;
+  district?: (number | null) | District;
   updatedAt: string;
   createdAt: string;
 }
@@ -1076,9 +1091,9 @@ export interface Blog {
    */
   relatedCountries?: (number | Country)[] | null;
   /**
-   * Điểm đến liên quan
+   * Địa danh liên quan
    */
-  relatedDestinations?: (number | Destination)[] | null;
+  relatedDistricts?: (number | District)[] | null;
   /**
    * Bài viết liên quan hiển thị ở cuối trang
    */
@@ -1190,12 +1205,12 @@ export interface PayloadLockedDocument {
         value: number | Country;
       } | null)
     | ({
-        relationTo: 'destinations';
-        value: number | Destination;
-      } | null)
-    | ({
         relationTo: 'districts';
         value: number | District;
+      } | null)
+    | ({
+        relationTo: 'destinations';
+        value: number | Destination;
       } | null)
     | ({
         relationTo: 'tags';
@@ -1522,14 +1537,15 @@ export interface ToursSelect<T extends boolean = true> {
   slug?: T;
   subtitle?: T;
   shortDescription?: T;
-  destinations?:
+  districts?:
     | T
     | {
-        destination?: T;
+        district?: T;
         image?: T;
         duration_days?: T;
         id?: T;
       };
+  destinations?: T;
   countries?: T;
   tourType?: T;
   routeTitle?: T;
@@ -1554,6 +1570,7 @@ export interface ToursSelect<T extends boolean = true> {
     | T
     | {
         day?: T;
+        cityLocations?: T;
         destinations?: T;
         content?: T;
         services?:
@@ -1628,7 +1645,7 @@ export interface BlogsSelect<T extends boolean = true> {
   category?: T;
   relatedTour?: T;
   relatedCountries?: T;
-  relatedDestinations?: T;
+  relatedDistricts?: T;
   relatedPosts?: T;
   tenant?: T;
   isPublished?: T;
@@ -1665,7 +1682,7 @@ export interface ExperiencesSelect<T extends boolean = true> {
   latitude?: T;
   longitude?: T;
   country?: T;
-  destination?: T;
+  district?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1688,21 +1705,6 @@ export interface CountriesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "destinations_select".
- */
-export interface DestinationsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  latitude?: T;
-  longitude?: T;
-  country?: T;
-  featuredImage?: T;
-  description?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "districts_select".
  */
 export interface DistrictsSelect<T extends boolean = true> {
@@ -1710,6 +1712,7 @@ export interface DistrictsSelect<T extends boolean = true> {
   slug?: T;
   latitude?: T;
   longitude?: T;
+  country?: T;
   destination?: T;
   isHub?: T;
   logistics?:
@@ -1719,6 +1722,21 @@ export interface DistrictsSelect<T extends boolean = true> {
         nearestTrainStation?: T;
         transferNotes?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "destinations_select".
+ */
+export interface DestinationsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  latitude?: T;
+  longitude?: T;
+  district?: T;
+  featuredImage?: T;
+  description?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1743,7 +1761,7 @@ export interface FaqsSelect<T extends boolean = true> {
   slug?: T;
   answer?: T;
   countries?: T;
-  destinations?: T;
+  districts?: T;
   tags?: T;
   tour_categories?: T;
   is_general?: T;
@@ -1816,8 +1834,8 @@ export interface ServicesSelect<T extends boolean = true> {
   level?: T;
   description?: T;
   type?: T;
-  destination?: T;
   district?: T;
+  destination?: T;
   latitude?: T;
   longitude?: T;
   relatedExperiences?: T;

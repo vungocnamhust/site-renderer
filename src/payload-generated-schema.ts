@@ -611,15 +611,15 @@ export const tenants_rels = pgTable(
   ],
 )
 
-export const tours_destinations = pgTable(
-  'tours_destinations',
+export const tours_districts = pgTable(
+  'tours_districts',
   {
     _order: integer('_order').notNull(),
     _parentID: integer('_parent_id').notNull(),
     id: varchar('id').primaryKey(),
-    destination: integer('destination_id')
+    district: integer('district_id')
       .notNull()
-      .references(() => destinations.id, {
+      .references(() => districts.id, {
         onDelete: 'set null',
       }),
     image: integer('image_id').references(() => media.id, {
@@ -628,14 +628,14 @@ export const tours_destinations = pgTable(
     duration_days: numeric('duration_days', { mode: 'number' }),
   },
   (columns) => [
-    index('tours_destinations_order_idx').on(columns._order),
-    index('tours_destinations_parent_id_idx').on(columns._parentID),
-    index('tours_destinations_destination_idx').on(columns.destination),
-    index('tours_destinations_image_idx').on(columns.image),
+    index('tours_districts_order_idx').on(columns._order),
+    index('tours_districts_parent_id_idx').on(columns._parentID),
+    index('tours_districts_district_idx').on(columns.district),
+    index('tours_districts_image_idx').on(columns.image),
     foreignKey({
       columns: [columns['_parentID']],
       foreignColumns: [tours.id],
-      name: 'tours_destinations_parent_id_fk',
+      name: 'tours_districts_parent_id_fk',
     }).onDelete('cascade'),
   ],
 )
@@ -853,7 +853,7 @@ export const tours_rels = pgTable(
     countriesID: integer('countries_id'),
     'tour-categoriesID': integer('tour_categories_id'),
     tagsID: integer('tags_id'),
-    destinationsID: integer('destinations_id'),
+    districtsID: integer('districts_id'),
   },
   (columns) => [
     index('tours_rels_order_idx').on(columns.order),
@@ -862,7 +862,7 @@ export const tours_rels = pgTable(
     index('tours_rels_countries_id_idx').on(columns.countriesID),
     index('tours_rels_tour_categories_id_idx').on(columns['tour-categoriesID']),
     index('tours_rels_tags_id_idx').on(columns.tagsID),
-    index('tours_rels_destinations_id_idx').on(columns.destinationsID),
+    index('tours_rels_districts_id_idx').on(columns.districtsID),
     foreignKey({
       columns: [columns['parent']],
       foreignColumns: [tours.id],
@@ -884,9 +884,9 @@ export const tours_rels = pgTable(
       name: 'tours_rels_tags_fk',
     }).onDelete('cascade'),
     foreignKey({
-      columns: [columns['destinationsID']],
-      foreignColumns: [destinations.id],
-      name: 'tours_rels_destinations_fk',
+      columns: [columns['districtsID']],
+      foreignColumns: [districts.id],
+      name: 'tours_rels_districts_fk',
     }).onDelete('cascade'),
   ],
 )
@@ -1010,7 +1010,7 @@ export const blogs_rels = pgTable(
     parent: integer('parent_id').notNull(),
     path: varchar('path').notNull(),
     countriesID: integer('countries_id'),
-    destinationsID: integer('destinations_id'),
+    districtsID: integer('districts_id'),
     blogsID: integer('blogs_id'),
   },
   (columns) => [
@@ -1018,7 +1018,7 @@ export const blogs_rels = pgTable(
     index('blogs_rels_parent_idx').on(columns.parent),
     index('blogs_rels_path_idx').on(columns.path),
     index('blogs_rels_countries_id_idx').on(columns.countriesID),
-    index('blogs_rels_destinations_id_idx').on(columns.destinationsID),
+    index('blogs_rels_districts_id_idx').on(columns.districtsID),
     index('blogs_rels_blogs_id_idx').on(columns.blogsID),
     foreignKey({
       columns: [columns['parent']],
@@ -1031,9 +1031,9 @@ export const blogs_rels = pgTable(
       name: 'blogs_rels_countries_fk',
     }).onDelete('cascade'),
     foreignKey({
-      columns: [columns['destinationsID']],
-      foreignColumns: [destinations.id],
-      name: 'blogs_rels_destinations_fk',
+      columns: [columns['districtsID']],
+      foreignColumns: [districts.id],
+      name: 'blogs_rels_districts_fk',
     }).onDelete('cascade'),
     foreignKey({
       columns: [columns['blogsID']],
@@ -1108,7 +1108,7 @@ export const experiences = pgTable(
     country: integer('country_id').references(() => countries.id, {
       onDelete: 'set null',
     }),
-    destination: integer('destination_id').references(() => destinations.id, {
+    district: integer('district_id').references(() => districts.id, {
       onDelete: 'set null',
     }),
     updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
@@ -1122,7 +1122,7 @@ export const experiences = pgTable(
     uniqueIndex('experiences_slug_idx').on(columns.slug),
     index('experiences_image_idx').on(columns.image),
     index('experiences_country_idx').on(columns.country),
-    index('experiences_destination_idx').on(columns.destination),
+    index('experiences_district_idx').on(columns.district),
     index('experiences_updated_at_idx').on(columns.updatedAt),
     index('experiences_created_at_idx').on(columns.createdAt),
   ],
@@ -1185,8 +1185,8 @@ export const countries_rels = pgTable(
   ],
 )
 
-export const destinations = pgTable(
-  'destinations',
+export const districts = pgTable(
+  'districts',
   {
     id: serial('id').primaryKey(),
     name: varchar('name').notNull(),
@@ -1196,39 +1196,6 @@ export const destinations = pgTable(
     country: integer('country_id')
       .notNull()
       .references(() => countries.id, {
-        onDelete: 'set null',
-      }),
-    featuredImage: integer('featured_image_id').references(() => media.id, {
-      onDelete: 'set null',
-    }),
-    description: jsonb('description'),
-    updatedAt: timestamp('updated_at', { mode: 'string', withTimezone: true, precision: 3 })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp('created_at', { mode: 'string', withTimezone: true, precision: 3 })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => [
-    uniqueIndex('destinations_slug_idx').on(columns.slug),
-    index('destinations_country_idx').on(columns.country),
-    index('destinations_featured_image_idx').on(columns.featuredImage),
-    index('destinations_updated_at_idx').on(columns.updatedAt),
-    index('destinations_created_at_idx').on(columns.createdAt),
-  ],
-)
-
-export const districts = pgTable(
-  'districts',
-  {
-    id: serial('id').primaryKey(),
-    name: varchar('name').notNull(),
-    slug: varchar('slug').notNull(),
-    latitude: numeric('latitude', { mode: 'number' }),
-    longitude: numeric('longitude', { mode: 'number' }),
-    destination: integer('destination_id')
-      .notNull()
-      .references(() => destinations.id, {
         onDelete: 'set null',
       }),
     isHub: boolean('is_hub').default(false),
@@ -1254,7 +1221,7 @@ export const districts = pgTable(
   },
   (columns) => [
     uniqueIndex('districts_slug_idx').on(columns.slug),
-    index('districts_destination_idx').on(columns.destination),
+    index('districts_country_idx').on(columns.country),
     index('districts_logistics_logistics_nearest_airport_idx').on(columns.logistics_nearestAirport),
     index('districts_logistics_logistics_nearest_train_station_idx').on(
       columns.logistics_nearestTrainStation,
@@ -1316,7 +1283,7 @@ export const faqs_rels = pgTable(
     parent: integer('parent_id').notNull(),
     path: varchar('path').notNull(),
     countriesID: integer('countries_id'),
-    destinationsID: integer('destinations_id'),
+    districtsID: integer('districts_id'),
     tagsID: integer('tags_id'),
     'tour-categoriesID': integer('tour_categories_id'),
   },
@@ -1325,7 +1292,7 @@ export const faqs_rels = pgTable(
     index('faqs_rels_parent_idx').on(columns.parent),
     index('faqs_rels_path_idx').on(columns.path),
     index('faqs_rels_countries_id_idx').on(columns.countriesID),
-    index('faqs_rels_destinations_id_idx').on(columns.destinationsID),
+    index('faqs_rels_districts_id_idx').on(columns.districtsID),
     index('faqs_rels_tags_id_idx').on(columns.tagsID),
     index('faqs_rels_tour_categories_id_idx').on(columns['tour-categoriesID']),
     foreignKey({
@@ -1339,9 +1306,9 @@ export const faqs_rels = pgTable(
       name: 'faqs_rels_countries_fk',
     }).onDelete('cascade'),
     foreignKey({
-      columns: [columns['destinationsID']],
-      foreignColumns: [destinations.id],
-      name: 'faqs_rels_destinations_fk',
+      columns: [columns['districtsID']],
+      foreignColumns: [districts.id],
+      name: 'faqs_rels_districts_fk',
     }).onDelete('cascade'),
     foreignKey({
       columns: [columns['tagsID']],
@@ -1478,14 +1445,11 @@ export const services = pgTable(
       .references(() => service_types.id, {
         onDelete: 'set null',
       }),
-    destination: integer('destination_id')
+    district: integer('district_id')
       .notNull()
-      .references(() => destinations.id, {
+      .references(() => districts.id, {
         onDelete: 'set null',
       }),
-    district: integer('district_id').references(() => districts.id, {
-      onDelete: 'set null',
-    }),
     latitude: numeric('latitude', { mode: 'number' }),
     longitude: numeric('longitude', { mode: 'number' }),
     unit: varchar('unit'),
@@ -1502,7 +1466,6 @@ export const services = pgTable(
   (columns) => [
     uniqueIndex('services_service_code_idx').on(columns.serviceCode),
     index('services_type_idx').on(columns.type),
-    index('services_destination_idx').on(columns.destination),
     index('services_district_idx').on(columns.district),
     index('services_updated_at_idx').on(columns.updatedAt),
     index('services_created_at_idx').on(columns.createdAt),
@@ -1594,7 +1557,6 @@ export const payload_locked_documents_rels = pgTable(
     blogsID: integer('blogs_id'),
     experiencesID: integer('experiences_id'),
     countriesID: integer('countries_id'),
-    destinationsID: integer('destinations_id'),
     districtsID: integer('districts_id'),
     tagsID: integer('tags_id'),
     faqsID: integer('faqs_id'),
@@ -1616,7 +1578,6 @@ export const payload_locked_documents_rels = pgTable(
     index('payload_locked_documents_rels_blogs_id_idx').on(columns.blogsID),
     index('payload_locked_documents_rels_experiences_id_idx').on(columns.experiencesID),
     index('payload_locked_documents_rels_countries_id_idx').on(columns.countriesID),
-    index('payload_locked_documents_rels_destinations_id_idx').on(columns.destinationsID),
     index('payload_locked_documents_rels_districts_id_idx').on(columns.districtsID),
     index('payload_locked_documents_rels_tags_id_idx').on(columns.tagsID),
     index('payload_locked_documents_rels_faqs_id_idx').on(columns.faqsID),
@@ -1671,11 +1632,6 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns['countriesID']],
       foreignColumns: [countries.id],
       name: 'payload_locked_documents_rels_countries_fk',
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [columns['destinationsID']],
-      foreignColumns: [destinations.id],
-      name: 'payload_locked_documents_rels_destinations_fk',
     }).onDelete('cascade'),
     foreignKey({
       columns: [columns['districtsID']],
@@ -2058,19 +2014,19 @@ export const relations_tenants = relations(tenants, ({ one, many }) => ({
     relationName: '_rels',
   }),
 }))
-export const relations_tours_destinations = relations(tours_destinations, ({ one }) => ({
+export const relations_tours_districts = relations(tours_districts, ({ one }) => ({
   _parentID: one(tours, {
-    fields: [tours_destinations._parentID],
+    fields: [tours_districts._parentID],
     references: [tours.id],
-    relationName: 'destinations',
+    relationName: 'districts',
   }),
-  destination: one(destinations, {
-    fields: [tours_destinations.destination],
-    references: [destinations.id],
-    relationName: 'destination',
+  district: one(districts, {
+    fields: [tours_districts.district],
+    references: [districts.id],
+    relationName: 'district',
   }),
   image: one(media, {
-    fields: [tours_destinations.image],
+    fields: [tours_districts.image],
     references: [media.id],
     relationName: 'image',
   }),
@@ -2189,10 +2145,10 @@ export const relations_tours_rels = relations(tours_rels, ({ one }) => ({
     references: [tags.id],
     relationName: 'tags',
   }),
-  destinationsID: one(destinations, {
-    fields: [tours_rels.destinationsID],
-    references: [destinations.id],
-    relationName: 'destinations',
+  districtsID: one(districts, {
+    fields: [tours_rels.districtsID],
+    references: [districts.id],
+    relationName: 'districts',
   }),
 }))
 export const relations_tours = relations(tours, ({ one, many }) => ({
@@ -2201,8 +2157,8 @@ export const relations_tours = relations(tours, ({ one, many }) => ({
     references: [media.id],
     relationName: 'featuredImage',
   }),
-  destinations: many(tours_destinations, {
-    relationName: 'destinations',
+  districts: many(tours_districts, {
+    relationName: 'districts',
   }),
   tourTiers: many(tours_tour_tiers, {
     relationName: 'tourTiers',
@@ -2262,10 +2218,10 @@ export const relations_blogs_rels = relations(blogs_rels, ({ one }) => ({
     references: [countries.id],
     relationName: 'countries',
   }),
-  destinationsID: one(destinations, {
-    fields: [blogs_rels.destinationsID],
-    references: [destinations.id],
-    relationName: 'destinations',
+  districtsID: one(districts, {
+    fields: [blogs_rels.districtsID],
+    references: [districts.id],
+    relationName: 'districts',
   }),
   blogsID: one(blogs, {
     fields: [blogs_rels.blogsID],
@@ -2332,10 +2288,10 @@ export const relations_experiences = relations(experiences, ({ one, many }) => (
     references: [countries.id],
     relationName: 'country',
   }),
-  destination: one(destinations, {
-    fields: [experiences.destination],
-    references: [destinations.id],
-    relationName: 'destination',
+  district: one(districts, {
+    fields: [experiences.district],
+    references: [districts.id],
+    relationName: 'district',
   }),
 }))
 export const relations_countries_rels = relations(countries_rels, ({ one }) => ({
@@ -2360,23 +2316,11 @@ export const relations_countries = relations(countries, ({ one, many }) => ({
     relationName: '_rels',
   }),
 }))
-export const relations_destinations = relations(destinations, ({ one }) => ({
+export const relations_districts = relations(districts, ({ one }) => ({
   country: one(countries, {
-    fields: [destinations.country],
+    fields: [districts.country],
     references: [countries.id],
     relationName: 'country',
-  }),
-  featuredImage: one(media, {
-    fields: [destinations.featuredImage],
-    references: [media.id],
-    relationName: 'featuredImage',
-  }),
-}))
-export const relations_districts = relations(districts, ({ one }) => ({
-  destination: one(destinations, {
-    fields: [districts.destination],
-    references: [destinations.id],
-    relationName: 'destination',
   }),
   logistics_nearestAirport: one(transit_hubs, {
     fields: [districts.logistics_nearestAirport],
@@ -2401,10 +2345,10 @@ export const relations_faqs_rels = relations(faqs_rels, ({ one }) => ({
     references: [countries.id],
     relationName: 'countries',
   }),
-  destinationsID: one(destinations, {
-    fields: [faqs_rels.destinationsID],
-    references: [destinations.id],
-    relationName: 'destinations',
+  districtsID: one(districts, {
+    fields: [faqs_rels.districtsID],
+    references: [districts.id],
+    relationName: 'districts',
   }),
   tagsID: one(tags, {
     fields: [faqs_rels.tagsID],
@@ -2471,11 +2415,6 @@ export const relations_services = relations(services, ({ one, many }) => ({
     references: [service_types.id],
     relationName: 'type',
   }),
-  destination: one(destinations, {
-    fields: [services.destination],
-    references: [destinations.id],
-    relationName: 'destination',
-  }),
   district: one(districts, {
     fields: [services.district],
     references: [districts.id],
@@ -2533,11 +2472,6 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.countriesID],
       references: [countries.id],
       relationName: 'countries',
-    }),
-    destinationsID: one(destinations, {
-      fields: [payload_locked_documents_rels.destinationsID],
-      references: [destinations.id],
-      relationName: 'destinations',
     }),
     districtsID: one(districts, {
       fields: [payload_locked_documents_rels.districtsID],
@@ -2642,7 +2576,7 @@ type DatabaseSchema = {
   tenants_content_basic_web_app_menu_items: typeof tenants_content_basic_web_app_menu_items
   tenants: typeof tenants
   tenants_rels: typeof tenants_rels
-  tours_destinations: typeof tours_destinations
+  tours_districts: typeof tours_districts
   tours_tour_tiers: typeof tours_tour_tiers
   tours_itinerary_services_tier_overrides_tiers: typeof tours_itinerary_services_tier_overrides_tiers
   tours_itinerary_services_tier_overrides: typeof tours_itinerary_services_tier_overrides
@@ -2662,7 +2596,6 @@ type DatabaseSchema = {
   experiences: typeof experiences
   countries: typeof countries
   countries_rels: typeof countries_rels
-  destinations: typeof destinations
   districts: typeof districts
   tags: typeof tags
   faqs: typeof faqs
@@ -2697,7 +2630,7 @@ type DatabaseSchema = {
   relations_tenants_content_basic_web_app_menu_items: typeof relations_tenants_content_basic_web_app_menu_items
   relations_tenants_rels: typeof relations_tenants_rels
   relations_tenants: typeof relations_tenants
-  relations_tours_destinations: typeof relations_tours_destinations
+  relations_tours_districts: typeof relations_tours_districts
   relations_tours_tour_tiers: typeof relations_tours_tour_tiers
   relations_tours_itinerary_services_tier_overrides_tiers: typeof relations_tours_itinerary_services_tier_overrides_tiers
   relations_tours_itinerary_services_tier_overrides: typeof relations_tours_itinerary_services_tier_overrides
@@ -2717,7 +2650,6 @@ type DatabaseSchema = {
   relations_experiences: typeof relations_experiences
   relations_countries_rels: typeof relations_countries_rels
   relations_countries: typeof relations_countries
-  relations_destinations: typeof relations_destinations
   relations_districts: typeof relations_districts
   relations_tags: typeof relations_tags
   relations_faqs_rels: typeof relations_faqs_rels

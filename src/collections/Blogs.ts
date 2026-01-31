@@ -172,13 +172,13 @@ export const Blogs: CollectionConfig = {
       },
     },
     {
-      name: 'relatedDestinations',
-      label: 'Related Destinations / Cities',
+      name: 'relatedDistricts',
+      label: 'Related Districts / Cities',
       type: 'relationship',
-      relationTo: 'destinations',
+      relationTo: 'districts',
       hasMany: true,
       admin: {
-        description: 'Điểm đến liên quan',
+        description: 'Địa danh liên quan',
         position: 'sidebar',
       },
     },

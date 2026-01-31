@@ -53,11 +53,11 @@ export const FAQs: CollectionConfig = {
       },
     },
     {
-      name: 'destinations',
+      name: 'districts',
       type: 'relationship',
-      relationTo: 'destinations',
+      relationTo: 'districts',
       hasMany: true,
-      label: 'Related Destinations / Cities',
+      label: 'Related Districts / Cities',
       admin: {
         position: 'sidebar',
       },

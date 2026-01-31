@@ -15,7 +15,6 @@ import { Experiences } from './collections/Experiences'
 import { Blogs } from './collections/Blogs'
 import { TourCategories } from './collections/TourCategories'
 import { Countries } from './collections/Countries'
-import { Destinations } from './collections/Destinations'
 import { FAQs } from './collections/FAQs'
 import { ServiceTypes } from './collections/ServiceTypes'
 import { Services } from './collections/Services'
@@ -23,6 +22,7 @@ import { Districts } from './collections/Districts'
 import { ExperienceThemes } from './collections/ExperienceThemes'
 import { Markets } from './collections/Markets'
 import { TransitHubs } from './collections/TransitHubs'
+import { Destinations } from './collections/Destinations'
 
 
 const filename = fileURLToPath(import.meta.url)
@@ -48,7 +48,7 @@ export default buildConfig({
   },
   cors: '*',
   csrf: [], // Disable CSRF for easier local dev or configure properly later
-  collections: [Users, Media, Tenants, Tours, TourCategories, Blogs, Experiences, Countries, Destinations, Districts, Tags, FAQs, ServiceTypes, ExperienceThemes, Markets, TransitHubs, Services],
+  collections: [Users, Media, Tenants, Tours, TourCategories, Blogs, Experiences, Countries, Districts, Destinations, Tags, FAQs, ServiceTypes, ExperienceThemes, Markets, TransitHubs, Services],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -58,8 +58,15 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
     },
-    // Prevent dropping PostGIS system tables
-    push: false, 
+    // Use tablesFilter to ignore PostGIS system tables.
+    // We include all app-specific patterns to ensure db push manages them.
+    tablesFilter: [
+      'users*', 'media*', 'tenants*', 'tour*', 
+      'blog*', 'experience*', 'countr*', 'district*', 
+      'destination*', 'tag*', 'faq*', 'service*', 
+      'payload_*', 'transit*', 'market*', 'le_gal'
+    ],
+    push: true, 
   }),
   sharp,
   plugins: [
